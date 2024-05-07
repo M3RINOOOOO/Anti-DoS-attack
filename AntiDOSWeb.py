@@ -2,6 +2,7 @@ import os
 import re
 import config
 from datetime import datetime
+import sqlite3
 
 
 class AntiDOSWeb:
@@ -10,8 +11,30 @@ class AntiDOSWeb:
         self.formato_fecha = formato_fecha
         self.ult_mod = os.stat(log_path).st_mtime
         self.ban_path = ban_path
+        self.sqlite_path = sqlite_path
         self.ips_horas = {}
-        self.ip_baneadas = []
+        self.inicializarBaseDatos()
+
+    def inicializarBaseDatos(self):
+        conexion = sqlite3.connect(self.sqlite_path)
+        cursor = conexion.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS ips (
+                    id INTEGER PRIMARY KEY,
+                    ip TEXT NOT NULL,
+                    last_ban DOUBLE,
+                    n_bans INTEGER)''')
+        conexion.commit()
+        self.ip_baneadas = self.obtener_ips_baneadas(cursor)
+        conexion.close()
+
+    def obtenerIpsBaneadas(cursor):
+        cursor.execute("SELECT ip, last_ban, n_bans FROM ips")
+        ips_baneadas = cursor.fetchall()
+        # Convertir los resultados en un diccionario
+        ip_baneadas = {}
+        for ip, last_ban, n_bans in ips_baneadas:
+            ip_baneadas[ip] = {'last_ban': last_ban, 'n_bans': n_bans}
+        return ip_baneadas
 
     def leerRegistros(self):
         try:
