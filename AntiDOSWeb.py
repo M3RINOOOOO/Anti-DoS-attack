@@ -6,6 +6,7 @@ from datetime import datetime
 import sqlite3
 
 class AntiDOSWeb:
+########################################  CONSTRUCTOR   ########################################
     def __init__(self, log_path, ban_path, formato_fecha, sqlite_path):
         self.log_path = log_path
         self.formato_fecha = formato_fecha
@@ -15,6 +16,48 @@ class AntiDOSWeb:
         self.ips_horas = {}
         self.inicializarBaseDatos()
 
+
+######################################## GESTIÓN DE LOGS   ########################################
+    def leerRegistros(self):
+        try:
+            with open(self.log_path, "r") as log:
+                registros = log.read()
+
+            return registros
+        except Exception as e:
+            return f"Error al leer los registros: {e}"    
+        
+    def extraerIpsHoras(self):
+        ips_horas = {}
+        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
+        registros = self.leerRegistros()
+        matches = re.findall(patron, registros)
+
+        ips_desbanedas = self.obtenerIpsDesbaneadas()
+
+        for match in matches:
+            ip = match[0]
+            hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
+
+
+            fecha_ultimo_baneo = 0
+            if ip in self.ips_baneadas:
+                fecha_ultimo_baneo = self.ips_baneadas[ip]["last_ban"]
+
+
+            if not (ip in ips_desbanedas and hora <= fecha_ultimo_baneo):
+                if ip in ips_horas:
+                    if hora in ips_horas[ip]:
+                        ips_horas[ip][hora] += 1
+                    else:
+                        ips_horas[ip][hora] = 1
+                else:
+                    ips_horas[ip] = {hora: 1}
+
+        self.ips_horas = ips_horas
+
+
+######################################## GESTIÓN DE BASE DE DATOS   ########################################    
     def inicializarBaseDatos(self):
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
@@ -27,6 +70,16 @@ class AntiDOSWeb:
         conexion.commit()
         self.ips_baneadas = self.obtenerBaseDatos()
         conexion.close()
+
+    def obtenerBaseDatos(self):
+        conexion = sqlite3.connect(self.sqlite_path)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT ip, last_ban, n_bans, is_banned FROM ips")
+        ips_baneadas = cursor.fetchall()
+        ip_baneada = {}
+        for ip, last_ban, n_bans, is_banned in ips_baneadas:
+            ip_baneada[ip] = {'last_ban': last_ban, 'n_bans': n_bans, "is_banned": is_banned}
+        return ip_baneada
 
     def actualizarBaseDatos(self, ip, ban):
         conexion = sqlite3.connect(self.sqlite_path)
@@ -48,45 +101,21 @@ class AntiDOSWeb:
         
         self.ips_baneadas = self.obtenerBaseDatos()
 
-    def obtenerBaseDatos(self):
+    def obtenerIpsDesbaneadas(self):
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
-        cursor.execute("SELECT ip, last_ban, n_bans, is_banned FROM ips")
-        ips_baneadas = cursor.fetchall()
-        ip_baneada = {}
-        for ip, last_ban, n_bans, is_banned in ips_baneadas:
-            ip_baneada[ip] = {'last_ban': last_ban, 'n_bans': n_bans, "is_banned": is_banned}
-        
-        print(ip_baneada)
-        return ip_baneada
+        cursor.execute("SELECT ip FROM ips WHERE is_banned = 0")
+        ips = cursor.fetchall()
 
-    def leerRegistros(self):
-        try:
-            with open(self.log_path, "r") as log:
-                registros = log.read()
+        ips_desbaneadas = []
 
-            return registros
-        except Exception as e:
-            return f"Error al leer los registros: {e}"
+        for ip in ips:
+            ips_desbaneadas.append(ip[0])
 
-    def extraerIpsHoras(self):
-        ips_horas = {}
-        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
-        registros = self.leerRegistros()
-        matches = re.findall(patron, registros)
-        for match in matches:
-            ip = match[0]
-            hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
+        return ips_desbaneadas
 
-            if ip in ips_horas:
-                if hora in ips_horas[ip]:
-                    ips_horas[ip][hora] += 1
-                else:
-                    ips_horas[ip][hora] = 1
-            else:
-                ips_horas[ip] = {hora: 1}
 
-        self.ips_horas = ips_horas
+######################################## GESTIÓN DE BANEOS   ########################################
 
     def banearIp(self, ip):
         try:
@@ -97,6 +126,8 @@ class AntiDOSWeb:
                     ban_file.write(f"Deny from {ip}\n")
                     TelegramBot.enviarAvisoDos("M3RINOOOOO", ip)
                     self.actualizarBaseDatos(ip,True)
+                    print(f"La IP {ip} ha sido baneada")
+
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
@@ -115,8 +146,10 @@ class AntiDOSWeb:
         except Exception as e:
             return f"Error al desbanear la IP {ip}: {e}"
 
+######################################## MONITORIZACIÓN   ########################################
     def checkDos(self):
         for ip, horas in self.ips_horas.items():
+
             for hora, peticiones in horas.items():
                 if peticiones > config.MAX_REQUESTS_PER_SEG:
                     self.banearIp(ip)
@@ -124,14 +157,10 @@ class AntiDOSWeb:
     def checkDisBan(self):
         for ip in self.ips_baneadas:
             tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] - 1) * config.TIEMPO_BANEO
-            # print(f"Tiempo baneado: {tiempo_baneado}")
-            # print(f"Baneado hasta: {self.ips_baneadas[ip]['last_ban'] + tiempo_baneado}")
-            # print(f"Ahora son las: {datetime.now().timestamp()}")
             if self.ips_baneadas[ip]["last_ban"] + tiempo_baneado <= datetime.now().timestamp() and (self.ips_baneadas[ip]["is_banned"]):
                 print(f"La IP {ip} ha sido desbaneada")
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
-
 
     def monitor(self):
         while True:

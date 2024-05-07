@@ -21,6 +21,6 @@ MAX_REQUESTS_PER_SEG = 40
 MAX_REQUESTS_PER_MIN = 200
 
 ################## Tiempo de baneo ##################
-TIEMPO_BANEO = 10
+TIEMPO_BANEO = 3
 
 
