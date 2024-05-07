@@ -1,5 +1,3 @@
-import subprocess
-import re
 import AntiDOSWeb
 
 if __name__ == "__main__":
