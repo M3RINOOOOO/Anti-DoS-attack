@@ -1,6 +1,7 @@
 import os
 import re
 import config
+import TelegramBot
 from datetime import datetime
 import sqlite3
 
@@ -24,13 +25,12 @@ class AntiDOSWeb:
                     last_ban DOUBLE,
                     n_bans INTEGER)''')
         conexion.commit()
-        self.ip_baneadas = self.obtener_ips_baneadas(cursor)
+        self.ip_baneadas = self.obtenerIpsBaneadas(cursor)
         conexion.close()
 
-    def obtenerIpsBaneadas(cursor):
+    def obtenerIpsBaneadas(self,cursor):
         cursor.execute("SELECT ip, last_ban, n_bans FROM ips")
         ips_baneadas = cursor.fetchall()
-        # Convertir los resultados en un diccionario
         ip_baneadas = {}
         for ip, last_ban, n_bans in ips_baneadas:
             ip_baneadas[ip] = {'last_ban': last_ban, 'n_bans': n_bans}
@@ -67,8 +67,9 @@ class AntiDOSWeb:
     def banearIp(self, ip):
         try:
             with open(self.ban_path, "a") as ban_file:
-                if not f"Deny from {ip}" in open(self.ban_path).read():
+                if f"Deny from {ip}" not in open(self.ban_path).read(): 
                     ban_file.write(f"Deny from {ip}\n")
+                    TelegramBot.enviarAvisoDos("M3RINOOOOO", ip)
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
