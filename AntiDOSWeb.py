@@ -9,8 +9,9 @@ class AntiDOSWeb:
         self.filename = filename
         self.formato_fecha = formato_fecha
         self.ult_mod = os.stat(filename).st_mtime
+        self.ips_horas = {}
 
-    def leer_registros(self):
+    def leerRegistros(self):
         try:
             with open(self.filename, "r") as log:
                 registros = log.read()
@@ -21,10 +22,10 @@ class AntiDOSWeb:
         except Exception as e:
             return f"Error al leer los registros: {e}"
 
-    def extraer_ips_y_horas(self):
+    def extraerIpsHoras(self):
         ips_horas = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
-        registros = self.leer_registros()
+        registros = self.leerRegistros()
         matches = re.findall(patron, registros)
         for match in matches:
             ip = match[0]
@@ -43,11 +44,12 @@ class AntiDOSWeb:
             else:
                 ips_horas[ip] = {hora: 1}
 
-        return ips_horas
+        self.ips_horas = ips_horas
 
     def monitor(self):
         while True:
             ult_mod_actual = os.stat(self.filename).st_mtime
             if ult_mod_actual != self.ult_mod:
                 self.ult_mod = ult_mod_actual
-                print(self.extraer_ips_y_horas())
+                self.extraerIpsHoras()
+                print(self.ips_horas)
