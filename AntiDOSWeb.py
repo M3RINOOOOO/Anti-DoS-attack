@@ -28,6 +28,19 @@ class AntiDOSWeb:
         self.ip_baneadas = self.obtenerIpsBaneadas(cursor)
         conexion.close()
 
+    def actualizarIpBaneada(self, ip):
+        conexion = sqlite3.connect(self.sqlite_path)
+        cursor = conexion.cursor()
+        cursor.execute("SELECT n_bans FROM ips WHERE ip = ?", (ip,))
+        n_bans = cursor.fetchone()
+        if n_bans:
+            n_bans = n_bans[0] + 1
+            cursor.execute("UPDATE ips SET last_ban = ?, n_bans = ? WHERE ip = ?", (datetime.now().timestamp(), n_bans, ip))
+        else:
+            cursor.execute("INSERT INTO ips (ip, last_ban, n_bans) VALUES (?, ?, ?)", (ip, datetime.now().timestamp(), 1))
+        conexion.commit()
+        conexion.close()
+
     def obtenerIpsBaneadas(self,cursor):
         cursor.execute("SELECT ip, last_ban, n_bans FROM ips")
         ips_baneadas = cursor.fetchall()
@@ -70,6 +83,7 @@ class AntiDOSWeb:
                 if f"Deny from {ip}" not in open(self.ban_path).read(): 
                     ban_file.write(f"Deny from {ip}\n")
                     TelegramBot.enviarAvisoDos("M3RINOOOOO", ip)
+                    self.actualizarIpBaneada(ip)
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
