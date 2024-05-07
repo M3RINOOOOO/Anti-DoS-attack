@@ -1,5 +1,7 @@
 # Archivo de configuracion
 
+
+
 # Variables globales por defecto
 ################## RUTA SERVIDOR WEB ##################
 WEB_SERVER_PATH = "/var/www/html/"
@@ -15,6 +17,11 @@ APACHE_BAN_PATH = WEB_SERVER_PATH + ".htaccess"
 ################## NGINX ##################
 NGINX_LOG_PATHS = ["/var/log/nginx/access.log"]
 NGINX_BAN_PATH = "/etc/nginx/sites-available/default"
+
+################## MAIN ##################
+MAIN_LOG_PATH = NGINX_LOG_PATHS[0]
+MAIN_BAN_PATH = NGINX_BAN_PATH
+MAIN_SERVER = "nginx"
 
 ################## Número máximo de peticiones ##################
 MAX_REQUESTS_PER_SEG = 40

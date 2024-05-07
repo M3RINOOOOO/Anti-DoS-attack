@@ -7,7 +7,8 @@ import sqlite3
 
 class AntiDOSWeb:
 ########################################  CONSTRUCTOR   ########################################
-    def __init__(self, log_path, ban_path, formato_fecha, sqlite_path):
+    def __init__(self, log_path, ban_path, server, formato_fecha, sqlite_path):
+        self.server = server
         self.log_path = log_path
         self.formato_fecha = formato_fecha
         self.ult_mod = os.stat(log_path).st_mtime
@@ -123,7 +124,23 @@ class AntiDOSWeb:
                 esta_baneado = (ip in self.ips_baneadas) and (self.ips_baneadas[ip]["is_banned"])
             
                 if (f"Deny from {ip}" not in open(self.ban_path).read()) and not esta_baneado: 
-                    ban_file.write(f"Deny from {ip}\n")
+
+                    if(self.server == "apache"):
+                        ban_file.write(f"Deny from {ip}\n")
+
+                    elif(self.server == "nginx"):
+
+                        with open(self.ban_path, "r") as ban_file:
+                            lineas = ban_file.readlines()
+
+                        with open(self.ban_path, "w") as ban_file:
+                            for linea in lineas:
+                                ban_file.write(linea)
+                                if "location / {" in linea:
+                                    ban_file.write(f"\t\tdeny {ip};\n")
+
+                        os.system("nginx -s reload")
+
                     TelegramBot.enviarAvisoDos("M3RINOOOOO", ip)
                     self.actualizarBaseDatos(ip,True)
                     print(f"La IP {ip} ha sido baneada")
@@ -139,9 +156,15 @@ class AntiDOSWeb:
 
             with open(self.ban_path, "w") as ban_file:
                 for linea in lineas:
-                    if f"Deny from {ip}" not in linea:
-                        ban_file.write(linea)
-
+                    if self.server == "apache":
+                        if f"Deny from {ip}" not in linea:
+                            ban_file.write(linea)
+                    elif self.server == "nginx":
+                        if f"deny {ip};" not in linea:
+                            ban_file.write(linea)
+            if self.server == "nginx":
+                os.system("nginx -s reload")
+                    
             return f"La IP {ip} ha sido desbaneada"
         except Exception as e:
             return f"Error al desbanear la IP {ip}: {e}"
