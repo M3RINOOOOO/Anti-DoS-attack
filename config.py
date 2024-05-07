@@ -15,3 +15,9 @@ APACHE_BAN_PATH = WEB_SERVER_PATH + ".htaccess"
 ################## NGINX ##################
 NGINX_LOG_PATHS = ["/var/log/nginx/access.log"]
 NGINX_BAN_PATH = "/etc/nginx/sites-available/default"
+
+################## Número máximo de peticiones ##################
+MAX_REQUESTS_PER_SEG = 40
+MAX_REQUESTS_PER_MIN = 200
+
+
