@@ -1,7 +1,7 @@
 import os
 import re
 import config
-import TelegramBot
+import requests
 from datetime import datetime
 import sqlite3
 
@@ -141,13 +141,17 @@ class AntiDOSWeb:
 
                         os.system("nginx -s reload")
 
-                    TelegramBot.enviarAvisoDos("M3RINOOOOO", ip)
+                    self.enviarAvisoPorTelegram(ip)
+
                     self.actualizarBaseDatos(ip,True)
                     print(f"La IP {ip} ha sido baneada")
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
+
+    def enviarAvisoPorTelegram(self, ip):
+        requests.get(f"{config.URL_ENVIAR_MENSAJE}?username={config.TELEGRAM_USERNAME}&ip={ip}")
 
     def desbanearIp(self, ip):
         try:

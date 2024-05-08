@@ -3,6 +3,10 @@
 
 
 # Variables globales por defecto
+################## RUTA PARA ENVIAR LOS MENSAJES DESDE EL BOT DE TELEGRAM ##################
+URL_ENVIAR_MENSAJE = "https://anti-dos-cbc627e45bd1.herokuapp.com/enviarMensaje/"
+TELEGRAM_USERNAME = "M3RINOOOOO"
+
 ################## RUTA SERVIDOR WEB ##################
 WEB_SERVER_PATH = "/var/www/html/"
 
