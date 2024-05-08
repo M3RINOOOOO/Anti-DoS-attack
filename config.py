@@ -19,15 +19,17 @@ NGINX_LOG_PATHS = ["/var/log/nginx/access.log"]
 NGINX_BAN_PATH = "/etc/nginx/sites-available/default"
 
 ################## MAIN ##################
-MAIN_LOG_PATH = NGINX_LOG_PATHS[0]
-MAIN_BAN_PATH = NGINX_BAN_PATH
-MAIN_SERVER = "nginx"
+MAIN_SERVER = "apache"
+MAIN_LOG_PATH = APACHE_LOG_PATHS[0]
+MAIN_BAN_PATH = APACHE_BAN_PATH
+
 
 def editar_main_info(server, log_path, ban_path):
     global MAIN_LOG_PATH, MAIN_BAN_PATH, MAIN_SERVER
+    MAIN_SERVER = server
     MAIN_LOG_PATH= log_path
     MAIN_BAN_PATH = ban_path
-    MAIN_SERVER = server
+    
 
 
 ################## Número máximo de peticiones ##################
