@@ -139,7 +139,7 @@ class AntiDOSWeb:
                                 if "location / {" in linea:
                                     ban_file.write(f"\t\tdeny {ip};\n")
 
-                        os.system("nginx -s reload")
+                        os.system("sudo /usr/sbin/nginx -s reload")
 
                     self.enviarAvisoPorTelegram(ip)
 
