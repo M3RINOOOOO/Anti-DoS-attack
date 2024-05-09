@@ -3,8 +3,8 @@ from tkinter import font
 import sys, signal
 import config
 import AntiDOSWeb
-from time import sleep
-import threading
+from threading import *
+import time 
 
 def defHandler(sig, frame):
 	print("\n\n[!] Saliendo forzadamente...\n")
@@ -15,7 +15,7 @@ signal.signal(signal.SIGINT, defHandler)
 main_server = config.MAIN_SERVER
 main_log_path = config.MAIN_LOG_PATH
 main_ban_path = config.MAIN_BAN_PATH
-
+telegram_username = config.TELEGRAM_USERNAME
 
 ########################CREACIÓN VENTANA PRINCIPAL########################
 
@@ -93,7 +93,7 @@ def seleccionarRutaBans():
 	label_bans.destroy()
 	boton_submit_bans.destroy()
 	print(main_server, main_log_path, main_ban_path)
-	putMonitorItems()
+	putsTelegramItems()
 
 
 def putBansItems():
@@ -115,29 +115,61 @@ def putBansItems():
 		label_bans = tk.Label(root, text="Rutas usuales donde se encuentran los bans en Nginx :\n/etc/nginx/sites-available/default", font="Helvetica 12")
 		label_bans.place(relx=0.5, y=200, anchor="center")
 
+########################INTRODUCIÓN USUARIO TELEGRAM########################
+
+def seleccionarTelegramUser():
+	global telegram_username
+	telegram_username = input_telegram.get()
+	input_telegram.destroy()
+	boton_submit_telegram.destroy()
+	label_pedir_telegram.destroy()
+	putMonitorItems()
+
+def putsTelegramItems():
+	global input_telegram, boton_submit_telegram, label_pedir_telegram
+	input_telegram = tk.Entry(root)
+	input_telegram.bind("<KeyRelease>", lambda event: verificarContenido(input_telegram,boton_submit_telegram))
+	input_telegram.place(relx=0.5, y=300, anchor="center")
+
+	boton_submit_telegram = tk.Button(root, text="Enviar", width=15, height=5, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(), bg="#9966cb")
+	boton_submit_telegram.place(relx=0.5, y=400, anchor="center")
+	label_pedir_telegram = tk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Helvetica 12")
+	label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
+
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
 
+anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", "ip_bans.db", telegram_username)
+monitor_thread=Thread()
+
 def putMonitorItems():
+	global boton_monitor, boton_parar_monitor
 	root.attributes("-fullscreen", True)
-	boton_monitor = tk.Button(root, text="Empezar monitorización", width=25, height=5, command=comenzarMonitor, bg="#45f74a")
+	boton_monitor = tk.Button(root, text="Empezar monitorización", width=25, height=5, command=threading, bg="#45f74a")
 	boton_monitor.place(relx=0.33, y=800, anchor="center")
 
-	boton_parar_monitor = tk.Button(root, text="Para monitorización", width=25, height=5, command=comenzarMonitor, bg="#45f74a")
+	boton_parar_monitor = tk.Button(root, text="Parar monitorización", width=25, height=5, command=terminarMonitor,state=tk.DISABLED, bg="#45f74a")
 	boton_parar_monitor.place(relx=0.66, y=800, anchor="center")
 
 	boton_cerrar = tk.Button(root, text="Cerrar programa", width=15, height=5, command=funcionSalir, bg="#FF0000")
 	boton_cerrar.place(relx=0.5, y=900, anchor="center")
 
+def threading(): 
+    monitor_thread=Thread(target=comenzarMonitor) 
+    monitor_thread.start() 
 
 def comenzarMonitor():
-	global monitor_process
-	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", "ip_bans.db")
-	monitor_process = threading.Thread(target=anti_dos.monitor())
-	monitor_process.start()
+	boton_monitor.config(state=tk.DISABLED)
+	boton_parar_monitor.config(state=tk.NORMAL)
+	anti_dos.monitor()
 
+def terminarMonitor():
+	boton_parar_monitor.config(state=tk.DISABLED)
+	boton_monitor.config(state=tk.NORMAL)
+	anti_dos.terminarMonitor()
 
 def funcionSalir():
-    print("\n\n[!] Saliendo...\n")
-    sys.exit(1)	
+	terminarMonitor()
+	print("\n\n[!] Saliendo...\n")
+	sys.exit(1)
 
 root.mainloop()
