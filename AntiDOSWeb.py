@@ -7,16 +7,16 @@ import sqlite3
 
 class AntiDOSWeb:
 ########################################  CONSTRUCTOR   ########################################
-    def __init__(self, server, log_path, ban_path, formato_fecha, sqlite_path):
+    def __init__(self, server, log_path, ban_path, formato_fecha, sqlite_path, telegram_user):
         self.server = server
         self.log_path = log_path
-        self.formato_fecha = formato_fecha
-        self.ult_mod = os.stat(log_path).st_mtime
         self.ban_path = ban_path
+        self.formato_fecha = formato_fecha
         self.sqlite_path = sqlite_path
+        self.telegram_user = telegram_user
+        self.ult_mod = os.stat(log_path).st_mtime        
         self.ips_horas = {}
         self.inicializarBaseDatos()
-
 
 ######################################## GESTIÓN DE LOGS   ########################################
     def leerRegistros(self):
@@ -151,7 +151,7 @@ class AntiDOSWeb:
             return f"Error al banear la IP {ip}: {e}"
 
     def enviarAvisoPorTelegram(self, ip):
-        requests.get(f"{config.URL_ENVIAR_MENSAJE}?username={config.TELEGRAM_USERNAME}&ip={ip}")
+        requests.get(f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}")
 
     def desbanearIp(self, ip):
         try:
@@ -190,7 +190,8 @@ class AntiDOSWeb:
                 self.desbanearIp(ip)
 
     def monitor(self):
-        while True:
+        self.monitorizar = True
+        while self.monitorizar:
             self.checkDisBan()
 
             ult_mod_actual = os.stat(self.log_path).st_mtime
@@ -198,3 +199,6 @@ class AntiDOSWeb:
                 self.ult_mod = ult_mod_actual
                 self.extraerIpsHoras()
                 self.checkDos()
+    
+    def terminarMonitor(self):
+        self.monitorizar = False
