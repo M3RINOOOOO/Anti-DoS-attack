@@ -10,11 +10,11 @@ import AntiDOSWeb
 
 class GraphPage(tk.Frame):
 
-    def __init__(self, parent, num_segs, main_server, main_log_path, main_ban_path, telegram_username):
+    def __init__(self, parent, num_segs, anti_dos):
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
-        self.figure = Figure(figsize=(5, 5), dpi=100)
+        self.figure = Figure(figsize=(10, 5), dpi=100)
         self.ax = self.figure.add_subplot(111)
         # format the x-axis to show the time
         myFmt = mdates.DateFormatter("%H:%M:%S")
@@ -34,8 +34,7 @@ class GraphPage(tk.Frame):
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-        self.anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z",
-                                         "ip_bans.db", telegram_username)
+        self.anti_dos = anti_dos
 
 
 
@@ -62,11 +61,3 @@ class GraphPage(tk.Frame):
         self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data)*1.1))
         self.canvas.draw_idle()  # redraw plot
         self.after(1000, self.animate)  # repeat after 1s
-
-
-root = tk.Tk()
-graph = GraphPage(root, num_segs=60, main_server="nginx", main_ban_path="/etc/nginx/sites-available/default", main_log_path="/var/log/nginx/access.log", telegram_username="manbolq")
-graph.pack(fill='both', expand=True)
-root.geometry('500x400')
-graph.animate()  # launch the animation
-root.mainloop()
