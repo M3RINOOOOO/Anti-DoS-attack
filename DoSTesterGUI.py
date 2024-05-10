@@ -43,7 +43,7 @@ root = ttk.Window(themename="superhero")
 root.title("DoS Tester GUI")
 root.geometry("400x180")
 
-imagen_icono = tk.PhotoImage(file="/home/manbolq/Escritorio/DGIIM/Anti-DoS-attack/images/kaki.png")
+imagen_icono = tk.PhotoImage(file="images/kaki.png")
 root.iconphoto(True, imagen_icono)
 
 #root.resizable(width=False, height=False)

@@ -60,20 +60,22 @@ class AntiDOSWeb:
 
     def extraerHorasActividad(self):
         horas_actividad = {}
-        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
+        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\] ".*?" (\d{3}) \d+ "-" ".*?"'
         registros = self.leerRegistros()
         matches = re.findall(patron, registros)
 
         for match in matches:
+            ip = match[0]
             hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
+            codigo = int(match[2])
 
-            if hora in horas_actividad:
-                horas_actividad[hora] += 1
-            else:
-                horas_actividad[hora] = 1
+            if codigo != 403:
+                if hora in horas_actividad:
+                    horas_actividad[hora] += 1
+                else:
+                    horas_actividad[hora] = 1
 
         return horas_actividad
-
 
 ######################################## GESTIÓN DE BASE DE DATOS   ########################################    
     def inicializarBaseDatos(self):
