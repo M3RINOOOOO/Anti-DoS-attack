@@ -4,6 +4,7 @@ import sys, signal
 import argparse
 import os
 from dotenv import load_dotenv, set_key
+from simple_term_menu import TerminalMenu
 
 
 def def_handler(sig, frame):
@@ -33,7 +34,99 @@ def main():
     args = parseArgs()
 
     if args.interactive:
-        print("Modo interactivo activado")
+        menu = TerminalMenu(config.SERVERS)
+        print("[+] Selecciona el servidor:")
+        indice = menu.show()
+        print(f"SERVER: {config.SERVERS[indice]}")
+        set_key(".env", "SERVER", config.SERVERS[indice])
+
+        if config.SERVERS[indice] == "apache":
+            ## PEDIR ARCHIVO DE LOGS
+            menu = TerminalMenu(config.APACHE_LOG_PATHS + ["Ruta personalizada"])
+            print("[+] Selecciona el archivo de logs")
+            print("[*] Las rutas de logs más comunes son:")
+            indice = menu.show()
+
+            if indice == len(config.APACHE_LOG_PATHS):
+                log_path = input("Introduce la ruta del log: ")
+            else:
+                log_path = config.APACHE_LOG_PATHS[indice]
+
+            print(f"Archivo de logs: {log_path}")
+            set_key(".env", "LOG_PATH", log_path)
+
+            ## PEDIR ARCHIVO DE BANS
+
+            menu = TerminalMenu([config.APACHE_BAN_PATH, "Ruta personalizada"])
+            print("[+] Selecciona el archivo de baneos de Apache")
+            print("[*] Debe ser el archivo .htaccess de la ruta principal del servidor")
+            indice = menu.show()
+
+            if indice == 1:
+                ban_path = input("Introduce la ruta del archivo de baneos: ")
+            else:
+                ban_path = config.APACHE_BAN_PATH
+
+            print(f"Archivo de baneos: {ban_path}")
+            set_key(".env", "BAN_PATH", ban_path)
+
+            ## PEDIR ARCHIVO DE CONFIGURACION
+
+            menu = TerminalMenu([config.APACHE_CONFIG_PATH, "Ruta personalizada"])
+            print("[+] Selecciona el archivo de configuración de Apache")
+            print("[*] Suele estar en la ruta:")
+            indice = menu.show()
+
+            if indice == 1:
+                config_path = input("Introduce la ruta del archivo de configuración: ")
+            else:
+                config_path = config.APACHE_CONFIG_PATH
+
+            print(f"Archivo de configuración: {config_path}")
+            set_key(".env", "CONFIG_PATH", config_path)
+
+            ## PEDIR ARCHIVO DE BASE DE DATOS
+
+            menu = TerminalMenu([config.DATABASE_FILE, "Ruta personalizada"])
+            print("[+] Selecciona el archivo de base de datos")
+            print("[*] Sugerencia:")
+            indice = menu.show()
+
+            if indice == 1:
+                database_file = input("Introduce el nombre del archivo de base de datos: ")
+            else:
+                database_file = config.DATABASE_FILE
+
+            print(f"Archivo de base de datos: {database_file}")
+            set_key(".env", "DATABASE_FILE", database_file)
+
+            ## PEDIR USUARIO DE TELEGRAM
+
+            menu = TerminalMenu(["Saltar", "Introducir usuario"])
+            print("[+] Introduce tu usuario de Telegram si quieres recibir notificaciones")
+            indice = menu.show()
+
+            telegram_user = None
+            if indice == 1:
+                telegram_user = input("Introduce tu usuario de Telegram: ")
+
+            if telegram_user:
+                print(f"Usuario de Telegram: {telegram_user}")
+                set_key(".env", "TELEGRAM_USER", telegram_user)
+
+
+        else:
+
+            ## PEDIR ARCHIVO DE LOGS
+
+            ## PEDIR ARCHIVO DE BANS
+
+            ## PEDIR ARCHIVO DE CONFIGURACION
+
+            ## PEDIR ARCHIVO DE BASE DE DATOS
+
+            ## PEDIR USUARIO DE TELEGRAM
+            pass
     else:
         server = args.server.lower() if args.server else os.getenv("SERVER")
         ban_path = args.ban_path if args.ban_path else os.getenv("BAN_PATH")
@@ -67,7 +160,7 @@ def main():
 
         if faltan_args_obligatorios:
             print("\n[!] ATENCION")
-            print("[!] os argumentos SERVER, BAN_PATH y LOG_PATH son obligatorios. Asegúrate de asignarles un valor")
+            print("[!] os argumentos SERVER, BAN_PATH, LOG_PATH y CONFIG_PATH son obligatorios. Asegúrate de asignarles un valor")
             print("[!] Saliendo...")
             sys.exit(1)
 
