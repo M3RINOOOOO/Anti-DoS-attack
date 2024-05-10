@@ -5,6 +5,8 @@ import sys, signal
 import config
 import AntiDOSWeb
 from threading import *
+from datetime import datetime, timedelta
+import GraphPage
 
 def defHandler(sig, frame):
 	print("\n\n[!] Saliendo forzadamente...\n")
@@ -40,7 +42,7 @@ def verificarContenido(campo_entrada,boton_submit):
 root = ttk.Window(themename="superhero")
 root.title("DoS Tester GUI")
 root.geometry("400x180")
-root.resizable(width=False, height=False)
+#root.resizable(width=False, height=False)
 centrarVentana(root)
 
 
@@ -171,7 +173,6 @@ monitor_thread=Thread()
 def putMonitorItems():
 	global boton_monitor, boton_parar_monitor
 	root.attributes('-zoomed', True)
-	#root.geometry("1000x1000")
 	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=threading, style='success.TButton')
 	boton_monitor.place(relx=0.33, y=800, anchor="center")
 
@@ -180,6 +181,10 @@ def putMonitorItems():
 
 	boton_cerrar = ttk.Button(root, text="Cerrar programa", width=15, command=funcionSalir, style='danger.TButton')
 	boton_cerrar.place(relx=0.5, y=900, anchor="center")
+
+	graph = GraphPage.GraphPage(root, 60, anti_dos)
+	graph.place(relx=0.5, y=350, anchor="center")
+	graph.animate()
 
 def threading(): 
     monitor_thread=Thread(target=comenzarMonitor) 
@@ -199,5 +204,8 @@ def funcionSalir():
 	terminarMonitor()
 	print("\n\n[!] Saliendo...\n")
 	sys.exit(1)
+
+
+
 
 root.mainloop()
