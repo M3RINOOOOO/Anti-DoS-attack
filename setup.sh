@@ -34,7 +34,7 @@ if [ "$SERVER" = "APACHE" ]; then
     echo "<Directory $RAIZ_WEB>" >> $CONFIG_PATH
     echo -e "\tAllowOverride All" >> $CONFIG_PATH
     echo "</Directory>" >> $CONFIG_PATH
-      
+
     sudo /usr/bin/systemctl apache2 reload
   else
     echo -e "\n\n[!] El archivo de configuración $CONFIG_PATH no existe!\n"
