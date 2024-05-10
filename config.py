@@ -34,6 +34,9 @@ MAIN_BAN_PATH = APACHE_BAN_PATH
 DATABASE_FILE = "ip_bans.db"
 
 
+MAIN_CONFIG_PATH = APACHE_CONFIG_PATH
+MAIN_SQLITE_NAME = "ip_bans.db"
+
 def editar_main_info(server, log_path, ban_path):
     global MAIN_LOG_PATH, MAIN_BAN_PATH, MAIN_SERVER
     MAIN_SERVER = server

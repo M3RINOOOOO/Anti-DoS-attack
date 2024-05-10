@@ -7,6 +7,8 @@ import AntiDOSWeb
 from threading import *
 from datetime import datetime, timedelta
 import GraphPage
+from dotenv import load_dotenv, set_key
+import os
 
 def defHandler(sig, frame):
 	print("\n\n[!] Saliendo forzadamente...\n")
@@ -14,10 +16,16 @@ def defHandler(sig, frame):
 
 signal.signal(signal.SIGINT, defHandler)
 
-main_server = config.MAIN_SERVER
-main_log_path = config.MAIN_LOG_PATH
-main_ban_path = config.MAIN_BAN_PATH
-telegram_username = config.TELEGRAM_USERNAME
+first_time = True
+
+if os.path.isfile('.env'):
+	first_time = False
+	load_dotenv()
+	main_server = os.getenv("SERVER")
+	main_log_path = os.getenv("LOG_PATH")
+	main_ban_path = os.getenv("BAN_PATH")
+	data_base_name = os.getenv("DATABASE_NAME")
+	telegram_username = os.getenv("TELEGRAM_USERNAME")
 
 ########################FUNCIONES AUXILIARES########################
 
@@ -41,42 +49,84 @@ def verificarContenido(campo_entrada,boton_submit):
 
 root = ttk.Window(themename="superhero")
 root.title("DoS Tester GUI")
-root.geometry("400x180")
-
 imagen_icono = tk.PhotoImage(file="images/kaki.png")
 root.iconphoto(True, imagen_icono)
-
-#root.resizable(width=False, height=False)
-centrarVentana(root)
-
-
 label_titulo = ttk.Label(root, text="DoS Tester", font=("Arial", 30, "bold"))
 label_titulo.place(relx=0.5, y=30, anchor="center")
-
-label_servidor = ttk.Label(root, text="Por favor, seleccione el servidor a monitorizar:", font=("Arial", 12))
-label_servidor.place(relx=0.5, y=80, anchor="center")
 
 ########################SELECCIÓN SERVIDOR########################
 
 def seleccionarServidor(servidor):
 	global main_server
 	main_server = servidor
+	set_key(".env", "SERVER", servidor)
 	label_servidor.destroy()
 	boton_apache.destroy()
 	boton_nginx.destroy()
-	putLogsItems(servidor)
+	if servidor=="apache":
+		putConfigItems(servidor)
+	elif servidor=="nginx":
+		set_key(".env", "SERVER", config.NGINX_BAN_PATH)
+		putLogsItems(servidor)
 
-boton_apache = ttk.Button(root, text="Apache", width=15, command=lambda: seleccionarServidor("apache"))
-boton_apache.place(relx=0.3, y=130, anchor="center")
+def putServerItems():
+	print("putServerItems")
+	global boton_submit_server, input_server, label_server, label_servidor, boton_apache, boton_nginx
 
-boton_nginx = ttk.Button(root, text="Nginx", width=15, command=lambda: seleccionarServidor("nginx"), style='warning.TButton')
-boton_nginx.place(relx=0.7, y=130, anchor="center")
+	root.geometry("400x180")
+	centrarVentana(root)
+	
+	input_server = ttk.Entry(root)
+	input_server.bind("<KeyRelease>", lambda event: verificarContenido(input_server,boton_submit_server))
+	input_server.place(relx=0.5, y=200, anchor="center")
+
+	boton_submit_server = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarServidor(), style='success.TButton')
+	boton_submit_server.place(relx=0.5, y=250, anchor="center")
+	label_servidor = ttk.Label(root, text="Por favor, seleccione el servidor a monitorizar:", font=("Arial", 12))
+	label_servidor.place(relx=0.5, y=80, anchor="center")
+
+	boton_apache = ttk.Button(root, text="Apache", width=15, command=lambda: seleccionarServidor("apache"))
+	boton_apache.place(relx=0.3, y=130, anchor="center")
+
+	boton_nginx = ttk.Button(root, text="Nginx", width=15, command=lambda: seleccionarServidor("nginx"), style='warning.TButton')
+	boton_nginx.place(relx=0.7, y=130, anchor="center")
+
+########################SELECCIÓN RUTA CONFIG########################
+
+def seleccionarRutaConfig():
+	global main_log_path
+	main_log_path = input_config.get()
+	set_key(".env", "CONFIG_PATH", main_log_path)
+	label_pedir_config.destroy()
+	input_config.destroy()
+	label_config.destroy()
+	boton_submit_config.destroy()
+	putLogsItems(main_server)
+
+def putConfigItems(servidor):
+	root.geometry("600x300")
+	centrarVentana(root)
+
+	global boton_submit_config, input_config, label_pedir_config, label_config
+	input_config = ttk.Entry(root)
+	input_config.bind("<KeyRelease>", lambda event: verificarContenido(input_config,boton_submit_config))
+	input_config.place(relx=0.5, y=200, anchor="center")
+
+	boton_submit_config = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaConfig(), style='success.TButton')
+	boton_submit_config.place(relx=0.5, y=250, anchor="center")
+	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Arial 12")
+	label_pedir_config.place(relx=0.5, y=100, anchor="center")
+
+	if servidor=="apache":
+		label_config = ttk.Label(root, text="Rutas usuales donde se encuentran los archivos de configuración en Apache2 :\n/etc/apache2/apache2.conf", font="Arial 12")
+		label_config.place(relx=0.5, y=150, anchor="center")
 
 ########################SELECCIÓN RUTA LOGS########################
 
 def seleccionarRutaLogs():
 	global main_log_path
 	main_log_path = input_logs.get()
+	set_key(".env", "LOG_PATH", main_log_path)
 	label_pedir_logs.destroy()
 	input_logs.destroy()
 	label_logs.destroy()
@@ -88,16 +138,20 @@ def putLogsItems(servidor):
 		root.geometry("600x400")
 	elif servidor=="nginx":
 		root.geometry("600x300")
+
 	centrarVentana(root)
+
 	global boton_submit_logs, input_logs, label_pedir_logs, label_logs
 	input_logs = ttk.Entry(root)
 	input_logs.bind("<KeyRelease>", lambda event: verificarContenido(input_logs,boton_submit_logs))
+
 	if servidor=="apache":
 		input_logs.place(relx=0.5, y=300, anchor="center")
 	elif servidor=="nginx":
 		input_logs.place(relx=0.5, y=210, anchor="center")
 
 	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaLogs(), style='success.TButton')
+	
 	if servidor=="apache":
 		boton_submit_logs.place(relx=0.5, y=350, anchor="center")
 	elif servidor=="nginx":
@@ -120,12 +174,12 @@ def putLogsItems(servidor):
 def seleccionarRutaBans():
 	global main_ban_path
 	main_ban_path = input_bans.get()
+	set_key(".env", "BAN_PATH", main_ban_path)
 	label_pedir_bans.destroy()
 	input_bans.destroy()
 	label_bans.destroy()
 	boton_submit_bans.destroy()
-	putsTelegramItems()
-
+	putsDatabaseItems()
 
 def putBansItems():
 	root.geometry("600x300")
@@ -148,11 +202,40 @@ def putBansItems():
 		label_bans = ttk.Label(root, text="Rutas usuales donde se encuentran los bans en Nginx :\n/etc/nginx/sites-available/default", font="Arial 12")
 		label_bans.place(relx=0.5, y=150, anchor="center")
 
+########################INTRODUCIÓN NOMBRE DATABASE########################
+
+def seleccionarNombreDatabase():
+	global data_base_name
+	data_base_name = input_database.get()
+	set_key(".env", "DATABASE_FILE", data_base_name)
+	label_pedir_database.destroy()
+	input_database.destroy()
+	label_database.destroy()
+	boton_submit_database.destroy()
+	putsTelegramItems()		
+
+def putsDatabaseItems():		
+	root.geometry("600x300")
+	centrarVentana(root)
+	global boton_submit_database, input_database, label_pedir_database, label_database
+	input_database = ttk.Entry(root)
+	input_database.bind("<KeyRelease>", lambda event: verificarContenido(input_database,boton_submit_database))
+	input_database.place(relx=0.5, y=200, anchor="center")
+
+	boton_submit_database = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarNombreDatabase(), style='success.TButton')
+	boton_submit_database.place(relx=0.5, y=250, anchor="center")
+	label_pedir_database = ttk.Label(root, text="Por favor, introduzca el nombre de la base de datos:", font="Arial 12")
+	label_pedir_database.place(relx=0.5, y=100, anchor="center")
+
+	label_database = ttk.Label(root, text="Por defecto: ip_bans.db", font="Arial 12")
+	label_database.place(relx=0.5, y=150, anchor="center")
+
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
 def seleccionarTelegramUser():
 	global telegram_username
 	telegram_username = input_telegram.get()
+	set_key(".env", "TELEGRAM_USER", telegram_username)
 	input_telegram.destroy()
 	boton_submit_telegram.destroy()
 	label_pedir_telegram.destroy()
@@ -171,12 +254,11 @@ def putsTelegramItems():
 
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
 
-anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", "ip_bans.db", telegram_username)
-monitor_thread=Thread()
-
 def putMonitorItems():
-	global boton_monitor, boton_parar_monitor
+	global boton_monitor, boton_parar_monitor, anti_dos
 	root.attributes('-zoomed', True)
+	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", "ip_bans.db", telegram_username)
+
 	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=threading, style='success.TButton')
 	boton_monitor.place(relx=0.33, y=800, anchor="center")
 
@@ -209,7 +291,9 @@ def funcionSalir():
 	print("\n\n[!] Saliendo...\n")
 	sys.exit(1)
 
-
-
+if first_time:
+	putServerItems()
+else :
+	putMonitorItems()
 
 root.mainloop()
