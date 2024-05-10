@@ -1,10 +1,10 @@
+import ttkbootstrap as ttk
 import tkinter as tk
-from tkinter import font
+from ttkbootstrap import font
 import sys, signal
 import config
 import AntiDOSWeb
 from threading import *
-import time 
 
 def defHandler(sig, frame):
 	print("\n\n[!] Saliendo forzadamente...\n")
@@ -17,18 +17,38 @@ main_log_path = config.MAIN_LOG_PATH
 main_ban_path = config.MAIN_BAN_PATH
 telegram_username = config.TELEGRAM_USERNAME
 
+########################FUNCIONES AUXILIARES########################
+
+#Llamar siempre después de un resize
+def centrarVentana(ventana):
+    ventana.update_idletasks()
+    ancho_ventana = ventana.winfo_width()
+    altura_ventana = ventana.winfo_height()
+    x_cordinate = int((ventana.winfo_screenwidth() / 2) - (ancho_ventana / 2))
+    y_cordinate = int((ventana.winfo_screenheight() / 2) - (altura_ventana / 2))
+    ventana.geometry("+{}+{}".format(x_cordinate, y_cordinate))
+
+def verificarContenido(campo_entrada,boton_submit):
+	input = campo_entrada.get()
+	if input:
+		boton_submit.config(state=tk.NORMAL)
+	else:
+		boton_submit.config(state=tk.DISABLED)
+
 ########################CREACIÓN VENTANA PRINCIPAL########################
 
-root = tk.Tk()
+root = ttk.Window(themename="superhero")
 root.title("DoS Tester GUI")
-root.geometry("500x500")
+root.geometry("400x180")
+root.resizable(width=False, height=False)
+centrarVentana(root)
 
-fuente_titulo = font.Font(family="Helvetica", size=26, weight="bold")
-label_titulo = tk.Label(root, text="Dos Tester", font=fuente_titulo, fg="#6a581c")
+
+label_titulo = ttk.Label(root, text="DoS Tester", font=("Arial", 30, "bold"))
 label_titulo.place(relx=0.5, y=30, anchor="center")
 
-label_servidor = tk.Label(root, text="Por favor, seleccione el servidor a utilizar:", font="Helvetica 12")
-label_servidor.place(relx=0.5, y=100, anchor="center")
+label_servidor = ttk.Label(root, text="Por favor, seleccione el servidor a monitorizar:", font=("Arial", 12))
+label_servidor.place(relx=0.5, y=80, anchor="center")
 
 ########################SELECCIÓN SERVIDOR########################
 
@@ -40,11 +60,11 @@ def seleccionarServidor(servidor):
 	boton_nginx.destroy()
 	putLogsItems(servidor)
 
-boton_apache = tk.Button(root, text="Apache", width=15, height=5, command=lambda: seleccionarServidor("apache"), bg="#9966cb")
-boton_apache.place(x=60, y=220)
+boton_apache = ttk.Button(root, text="Apache", width=15, command=lambda: seleccionarServidor("apache"))
+boton_apache.place(relx=0.3, y=130, anchor="center")
 
-boton_nginx = tk.Button(root, text="Nginx", width=15, height=5, command=lambda: seleccionarServidor("nginx"), bg="#9966cb")
-boton_nginx.place(x=280, y=220)
+boton_nginx = ttk.Button(root, text="Nginx", width=15, command=lambda: seleccionarServidor("nginx"), style='warning.TButton')
+boton_nginx.place(relx=0.7, y=130, anchor="center")
 
 ########################SELECCIÓN RUTA LOGS########################
 
@@ -58,30 +78,36 @@ def seleccionarRutaLogs():
 	putBansItems()
 
 def putLogsItems(servidor):
+	if servidor=="apache":
+		root.geometry("600x400")
+	elif servidor=="nginx":
+		root.geometry("600x300")
+	centrarVentana(root)
 	global boton_submit_logs, input_logs, label_pedir_logs, label_logs
-	input_logs = tk.Entry(root)
+	input_logs = ttk.Entry(root)
 	input_logs.bind("<KeyRelease>", lambda event: verificarContenido(input_logs,boton_submit_logs))
-	input_logs.place(relx=0.5, y=300, anchor="center")
+	if servidor=="apache":
+		input_logs.place(relx=0.5, y=300, anchor="center")
+	elif servidor=="nginx":
+		input_logs.place(relx=0.5, y=210, anchor="center")
 
-	boton_submit_logs = tk.Button(root, text="Enviar", width=15, height=5, state=tk.DISABLED, command=lambda: seleccionarRutaLogs(), bg="#9966cb")
-	boton_submit_logs.place(relx=0.5, y=400, anchor="center")
-	label_pedir_logs = tk.Label(root, text="Por favor, introduzca la ruta del archivo de logs:", font="Helvetica 12")
+	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaLogs(), style='success.TButton')
+	if servidor=="apache":
+		boton_submit_logs.place(relx=0.5, y=350, anchor="center")
+	elif servidor=="nginx":
+		boton_submit_logs.place(relx=0.5, y=260, anchor="center")
+
+	label_pedir_logs = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los logs del servidor.", font="Arial 15")
 	label_pedir_logs.place(relx=0.5, y=100, anchor="center")
 
+	##TODO: Permitir seleccionar para copiar las rutas??
 	if servidor=="apache":
-		label_logs = tk.Label(root, text="Rutas usuales donde se encuentran los logs en Apache2 :\n/var/log/apache2/access.log\n/var/log/apache/access.log\n/var/log/httpd/access.log\n/var/log/httpd/access_log\n/var/log/httpd-access.log", font="Helvetica 12")
+		label_logs = ttk.Label(root, text="Rutas usuales donde se encuentran los logs en Apache2 :\n/var/log/apache2/access.log\n/var/log/apache/access.log\n/var/log/httpd/access.log\n/var/log/httpd/access_log\n/var/log/httpd-access.log", font="Arial 12")
 		label_logs.place(relx=0.5, y=200, anchor="center")
 
 	elif servidor=="nginx":
-		label_logs = tk.Label(root, text="Rutas usuales donde se encuentran los logs en Nginx :\n/var/log/nginx/access.log", font="Helvetica 12")
-		label_logs.place(relx=0.5, y=200, anchor="center")
-
-def verificarContenido(campo_entrada,bot_submit):
-	input = campo_entrada.get()
-	if input:
-		bot_submit.config(state=tk.NORMAL)
-	else:
-		bot_submit.config(state=tk.DISABLED)
+		label_logs = ttk.Label(root, text="Rutas usuales donde se encuentran los logs en Nginx :\n/var/log/nginx/access.log", font="Arial 12")
+		label_logs.place(relx=0.5, y=150, anchor="center")
 
 ########################SELECCIÓN RUTA BANS########################  MAL
 
@@ -92,28 +118,29 @@ def seleccionarRutaBans():
 	input_bans.destroy()
 	label_bans.destroy()
 	boton_submit_bans.destroy()
-	print(main_server, main_log_path, main_ban_path)
 	putsTelegramItems()
 
 
 def putBansItems():
+	root.geometry("600x300")
+	centrarVentana(root)
 	global boton_submit_bans, input_bans, label_pedir_bans, label_bans
-	input_bans = tk.Entry(root)
+	input_bans = ttk.Entry(root)
 	input_bans.bind("<KeyRelease>", lambda event: verificarContenido(input_bans,boton_submit_bans))
-	input_bans.place(relx=0.5, y=300, anchor="center")
+	input_bans.place(relx=0.5, y=200, anchor="center")
 
-	boton_submit_bans = tk.Button(root, text="Enviar", width=15, height=5, state=tk.DISABLED, command=lambda: seleccionarRutaBans(), bg="#9966cb")
-	boton_submit_bans.place(relx=0.5, y=400, anchor="center")
-	label_pedir_bans = tk.Label(root, text="Por favor, introduzca la ruta del archivo de bans:", font="Helvetica 12")
+	boton_submit_bans = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaBans(), style='success.TButton')
+	boton_submit_bans.place(relx=0.5, y=250, anchor="center")
+	label_pedir_bans = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de bans:", font="Arial 12")
 	label_pedir_bans.place(relx=0.5, y=100, anchor="center")
 
 	if main_server=="apache":
-		label_bans = tk.Label(root, text="Rutas usuales donde se encuentran los bans en Apache2 :\n/var/www/html/.htaccess", font="Helvetica 12")
-		label_bans.place(relx=0.5, y=200, anchor="center")
+		label_bans = ttk.Label(root, text="Rutas usuales donde se encuentran los bans en Apache2 :\n/var/www/html/.htaccess", font="Arial 12")
+		label_bans.place(relx=0.5, y=150, anchor="center")
 
 	elif main_server=="nginx":
-		label_bans = tk.Label(root, text="Rutas usuales donde se encuentran los bans en Nginx :\n/etc/nginx/sites-available/default", font="Helvetica 12")
-		label_bans.place(relx=0.5, y=200, anchor="center")
+		label_bans = ttk.Label(root, text="Rutas usuales donde se encuentran los bans en Nginx :\n/etc/nginx/sites-available/default", font="Arial 12")
+		label_bans.place(relx=0.5, y=150, anchor="center")
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
@@ -127,13 +154,13 @@ def seleccionarTelegramUser():
 
 def putsTelegramItems():
 	global input_telegram, boton_submit_telegram, label_pedir_telegram
-	input_telegram = tk.Entry(root)
+	input_telegram = ttk.Entry(root)
 	input_telegram.bind("<KeyRelease>", lambda event: verificarContenido(input_telegram,boton_submit_telegram))
-	input_telegram.place(relx=0.5, y=300, anchor="center")
+	input_telegram.place(relx=0.5, y=200, anchor="center")
 
-	boton_submit_telegram = tk.Button(root, text="Enviar", width=15, height=5, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(), bg="#9966cb")
-	boton_submit_telegram.place(relx=0.5, y=400, anchor="center")
-	label_pedir_telegram = tk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Helvetica 12")
+	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(), style='success.TButton')
+	boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
+	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Arial 12")
 	label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
 
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
@@ -143,14 +170,15 @@ monitor_thread=Thread()
 
 def putMonitorItems():
 	global boton_monitor, boton_parar_monitor
-	root.attributes("-fullscreen", True)
-	boton_monitor = tk.Button(root, text="Empezar monitorización", width=25, height=5, command=threading, bg="#45f74a")
+	root.attributes('-zoomed', True)
+	#root.geometry("1000x1000")
+	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=threading, style='success.TButton')
 	boton_monitor.place(relx=0.33, y=800, anchor="center")
 
-	boton_parar_monitor = tk.Button(root, text="Parar monitorización", width=25, height=5, command=terminarMonitor,state=tk.DISABLED, bg="#45f74a")
+	boton_parar_monitor = ttk.Button(root, text="Parar monitorización", width=25, command=terminarMonitor,state=tk.DISABLED, style='warning.TButton')
 	boton_parar_monitor.place(relx=0.66, y=800, anchor="center")
 
-	boton_cerrar = tk.Button(root, text="Cerrar programa", width=15, height=5, command=funcionSalir, bg="#FF0000")
+	boton_cerrar = ttk.Button(root, text="Cerrar programa", width=15, command=funcionSalir, style='danger.TButton')
 	boton_cerrar.place(relx=0.5, y=900, anchor="center")
 
 def threading(): 
