@@ -40,7 +40,11 @@ def verificarContenido(campo_entrada,boton_submit):
 root = ttk.Window(themename="superhero")
 root.title("DoS Tester GUI")
 root.geometry("400x180")
-root.resizable(width=False, height=False)
+
+imagen_icono = tk.PhotoImage(file="/home/manbolq/Escritorio/DGIIM/Anti-DoS-attack/images/kaki.png")
+root.iconphoto(True, imagen_icono)
+
+#root.resizable(width=False, height=False)
 centrarVentana(root)
 
 
@@ -172,6 +176,7 @@ def putMonitorItems():
 	global boton_monitor, boton_parar_monitor
 	root.attributes('-zoomed', True)
 	#root.geometry("1000x1000")
+	#centrarVentana(root)
 	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=threading, style='success.TButton')
 	boton_monitor.place(relx=0.33, y=800, anchor="center")
 
