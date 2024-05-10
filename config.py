@@ -5,7 +5,7 @@
 # Variables globales por defecto
 ################## RUTA PARA ENVIAR LOS MENSAJES DESDE EL BOT DE TELEGRAM ##################
 URL_ENVIAR_MENSAJE = "https://anti-dos-cbc627e45bd1.herokuapp.com/enviarMensaje/"
-TELEGRAM_USERNAME = "M3RINOOOOO"
+TELEGRAM_USERNAME = "manbolq"
 
 ################## RUTA SERVIDOR WEB ##################
 WEB_SERVER_PATH = "/var/www/html/"
@@ -23,9 +23,9 @@ NGINX_LOG_PATHS = ["/var/log/nginx/access.log"]
 NGINX_BAN_PATH = "/etc/nginx/sites-available/default"
 
 ################## MAIN ##################
-MAIN_SERVER = "apache"
-MAIN_LOG_PATH = APACHE_LOG_PATHS[0]
-MAIN_BAN_PATH = APACHE_BAN_PATH
+MAIN_SERVER = "nginx"
+MAIN_LOG_PATH = NGINX_LOG_PATHS[0]
+MAIN_BAN_PATH = NGINX_BAN_PATH
 
 
 def editar_main_info(server, log_path, ban_path):
