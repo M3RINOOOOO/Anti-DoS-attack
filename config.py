@@ -17,6 +17,7 @@ APACHE_LOG_PATHS = ["/var/log/apache2/access.log",
                     "/var/log/httpd/access_log",
                     "/var/log/httpd-access.log"]
 APACHE_BAN_PATH = WEB_SERVER_PATH + ".htaccess"
+APACHE_CONFIG_PATH = "/etc/apache2/apache2.conf"
 
 ################## NGINX ##################
 NGINX_LOG_PATHS = ["/var/log/nginx/access.log"]
@@ -26,8 +27,9 @@ NGINX_BAN_PATH = "/etc/nginx/sites-available/default"
 MAIN_SERVER = "apache"
 MAIN_LOG_PATH = APACHE_LOG_PATHS[0]
 MAIN_BAN_PATH = APACHE_BAN_PATH
-
-
+MAIN_CONFIG_PATH = APACHE_CONFIG_PATH
+MAIN_SQLITE_NAME = "ip_bans.db"
+ 
 def editar_main_info(server, log_path, ban_path):
     global MAIN_LOG_PATH, MAIN_BAN_PATH, MAIN_SERVER
     MAIN_SERVER = server
