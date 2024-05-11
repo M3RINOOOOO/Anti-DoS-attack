@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from tkinter.scrolledtext import ScrolledText
 import sys, signal
 import config
 import AntiDOSWeb
@@ -272,11 +273,14 @@ def putAviso():
 
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
 def putMonitorItems():
-	global anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu
+	global anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
 	
 	root.attributes('-zoomed', True)
 
-	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username)
+	scrolled_text_baneos = ScrolledText(root, width=172,  height=10, state='disabled')
+	scrolled_text_baneos.place(relx=0.6, y=870, anchor="center")
+
+	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
 	graph = GraphPage.GraphPage(root, 60, anti_dos)
 	graph.place(relx=0.6, y=420, anchor="center")
@@ -313,16 +317,25 @@ def putMonitorItems():
 	menu_botones['menu'] = menu
 	menu_botones.place(relx=0.12, y=825, anchor="center")
 
+def actualizarScrolledTest(texto):
+	scrolled_text_baneos.config(state='normal')
+	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
+	scrolled_text_baneos.config(state='disabled')
+
 def threading(): 
     monitor_thread=Thread(target=comenzarMonitor) 
     monitor_thread.start() 
 
 def comenzarMonitor():
+	scrolled_text_baneos.tag_config("mi_color", foreground="#0dc526", font=("Helvetica", 12, "bold"))
+	actualizarScrolledTest("[+] Monitorizando...\n")
 	boton_monitor.config(state=tk.DISABLED)
 	boton_parar_monitor.config(state=tk.NORMAL)
 	anti_dos.monitor()
 
 def terminarMonitor():
+	scrolled_text_baneos.tag_config("mi_color", foreground="orange", font=("Helvetica", 12, "bold"))
+	actualizarScrolledTest("\n[!] Monitorización detenida\n\n")
 	boton_parar_monitor.config(state=tk.DISABLED)
 	boton_monitor.config(state=tk.NORMAL)
 	anti_dos.terminarMonitor()
