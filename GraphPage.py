@@ -18,7 +18,7 @@ class GraphPage(tk.Frame):
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
-        self.figure = Figure(figsize=(14, 7), dpi=100)
+        self.figure = Figure(figsize=(14, 6), dpi=100)
         self.figure.set_facecolor('#2CB57E')  
         self.figure.suptitle("Peticiones recibidas por segundo", fontsize=16)
         self.ax = self.figure.add_subplot(111)
@@ -27,10 +27,12 @@ class GraphPage(tk.Frame):
         myFmt = mdates.DateFormatter("%H:%M:%S")
         self.ax.xaxis.set_major_formatter(myFmt)
 
+        self.anti_dos = anti_dos
+
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-num_segs)
         self.x_data = [dateTimeObj + timedelta(seconds=i) for i in range(num_segs)]
-        self.y_data = [0 for i in range(num_segs)]
+        self.y_data = [self.nuevoElemento(int(self.x_data[i].timestamp())) for i in range(num_segs)]
 
         # create the plot
         self.plot = self.ax.plot(self.x_data, self.y_data, color=blue, label='Peticiones')[0]
@@ -45,7 +47,7 @@ class GraphPage(tk.Frame):
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-        self.anti_dos = anti_dos
+
 
 
 
@@ -71,4 +73,4 @@ class GraphPage(tk.Frame):
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
         self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data)*1.1))
         self.canvas.draw_idle()  # redraw plot
-        self.after(1000, self.animate)  # repeat after 1s
+        #self.after(1000, self.animate)  # repeat after 1s
