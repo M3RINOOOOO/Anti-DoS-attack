@@ -284,7 +284,7 @@ def putMonitorItems():
 
 	graph = GraphPage.GraphPage(root, 60, anti_dos)
 	graph.place(relx=0.6, y=420, anchor="center")
-	graph.animate()
+	threading_graph()
 
 	root.style.configure('success.TButton', font=('Helvetica', 20))
 	root.style.configure('warning.TButton', font=('Helvetica', 20))
@@ -321,6 +321,13 @@ def actualizarScrolledTest(texto):
 	scrolled_text_baneos.config(state='normal')
 	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
 	scrolled_text_baneos.config(state='disabled')
+
+def	threading_graph():	
+	thread_graph = Thread(target=animate_graph)
+	thread_graph.start()
+
+def animate_graph():
+	graph.animate()
 
 def threading(): 
     monitor_thread=Thread(target=comenzarMonitor) 

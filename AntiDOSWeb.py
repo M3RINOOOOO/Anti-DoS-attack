@@ -166,12 +166,16 @@ class AntiDOSWeb:
                     self.enviarAvisoPorTelegram(ip)
 
                     self.actualizarBaseDatos(ip,True)
+
+                    hora_actual = datetime.now()
+                    hora_formateada = hora_actual.strftime("%d/%b/%Y:%H:%M:%S %z")
+
                     if self.scroll_gui:
                         self.scroll_gui.config(state='normal')
-                        self.scroll_gui.insert(tk.END, f"[-] La IP {ip} ha sido baneada\n", "mi_color")
+                        self.scroll_gui.insert(tk.END, f"[{hora_formateada}] La IP {ip} ha sido baneada\n", "mi_color")
                         self.scroll_gui.config(state='disabled')
                     else:
-                        print(f"La IP {ip} ha sido baneada")
+                        print(f"[{hora_formateada}] La IP {ip} ha sido baneada")
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
@@ -212,12 +216,16 @@ class AntiDOSWeb:
         for ip in self.ips_baneadas:
             tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] - 1) * config.TIEMPO_BANEO
             if self.ips_baneadas[ip]["last_ban"] + tiempo_baneado <= datetime.now().timestamp() and (self.ips_baneadas[ip]["is_banned"]):
+                
+                hora_actual = datetime.now()
+                hora_formateada = hora_actual.strftime("%d/%b/%Y:%H:%M:%S %z")
+                
                 if self.scroll_gui:
                     self.scroll_gui.config(state='normal')
-                    self.scroll_gui.insert(tk.END, f"[-] La IP {ip} ha sido desbaneada\n", "mi_color")
+                    self.scroll_gui.insert(tk.END, f"[{hora_formateada}] La IP {ip} ha sido desbaneada\n", "mi_color")
                     self.scroll_gui.config(state='disabled')
                 else:
-                    print(f"La IP {ip} ha sido desbaneada")
+                    print(f"[{hora_formateada}] La IP {ip} ha sido desbaneada")
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
 
