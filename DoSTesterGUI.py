@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.scrolledtext import ScrolledText
@@ -8,6 +9,14 @@ from threading import *
 import GraphPage
 from dotenv import load_dotenv, set_key
 import os
+import customtkinter
+import multiprocessing
+from pypot.utils import StoppableThread
+
+tiempo_grafica = 60
+graph = None
+timer = None
+
 
 def defHandler(sig, frame):
 	print("\n\n[!] Saliendo forzadamente...\n")
@@ -16,6 +25,7 @@ def defHandler(sig, frame):
 signal.signal(signal.SIGINT, defHandler)
 
 first_time = True
+graph_thread = None
 
 ########################FUNCIONES AUXILIARES########################
 
@@ -65,7 +75,7 @@ def seleccionarServidor(servidor,go_to_monitor=False):
 
 def putServerItems(go_to_monitor=False):
 	global label_servidor, boton_apache, boton_nginx
-	
+
 	root.geometry("400x180")
 	centrarVentana(root)
 
@@ -97,7 +107,7 @@ def seleccionarRutaConfig(go_to_monitor=False):
 
 def putConfigItems(go_to_monitor=False):
 	global combo_box_config, boton_submit_config, label_pedir_config
-	
+
 	root.geometry("600x300")
 	centrarVentana(root)
 
@@ -106,12 +116,12 @@ def putConfigItems(go_to_monitor=False):
 	elif main_server=="nginx":
 		combo_box_config = ttk.Combobox(root, style="TCombobox", values=config.NGINX_CONFIG_PATH,width=50)
 
-	combo_box_config.current(0)  
+	combo_box_config.current(0)
 	combo_box_config.place(relx=0.5, y=160, anchor="center")
 
 	boton_submit_config = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaConfig(go_to_monitor), style='success.TButton')
 	boton_submit_config.place(relx=0.5, y=250, anchor="center")
-	
+
 	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_config.place(relx=0.5, y=100, anchor="center")
 
@@ -143,7 +153,7 @@ def putLogsItems(go_to_monitor=False):
 	elif main_server=="nginx":
 		combo_box_logs = ttk.Combobox(root, style="TCombobox", values=config.NGINX_LOG_PATHS,width=50)
 
-	combo_box_logs.current(0)  
+	combo_box_logs.current(0)
 	combo_box_logs.place(relx=0.5, y=160, anchor="center")
 
 	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaLogs(go_to_monitor), style='success.TButton')
@@ -159,7 +169,7 @@ def seleccionarRutaBans(go_to_monitor=False):
 
 	main_ban_path = combo_box_bans.get()
 	set_key(".env", "BAN_PATH", main_ban_path)
-	
+
 	label_pedir_bans.destroy()
 	boton_submit_bans.destroy()
 	combo_box_bans.destroy()
@@ -180,7 +190,7 @@ def putBansItems(go_to_monitor=False):
 	elif main_server=="nginx":
 		combo_box_bans = ttk.Combobox(root, style="TCombobox", values=config.NGINX_BAN_PATH,width=50)
 
-	combo_box_bans.current(0)  
+	combo_box_bans.current(0)
 	combo_box_bans.place(relx=0.5, y=160, anchor="center")
 
 	boton_submit_bans = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaBans(go_to_monitor), style='success.TButton')
@@ -204,21 +214,21 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 	if go_to_monitor:
 		putMonitorItems()
 	else:
-		putsTelegramItems()			
+		putsTelegramItems()
 
-def putsDatabaseItems(go_to_monitor=False):	
+def putsDatabaseItems(go_to_monitor=False):
 	global combo_box_database, boton_submit_database, label_pedir_database
 
 	root.geometry("600x300")
 	centrarVentana(root)
-	
+
 	combo_box_database = ttk.Combobox(root, style="TCombobox", values=config.DATABASE_FILE,width=50)
 	combo_box_database.current(0)
 	combo_box_database.place(relx=0.5, y=160, anchor="center")
 
 	boton_submit_database = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarNombreDatabase(go_to_monitor), style='success.TButton')
 	boton_submit_database.place(relx=0.5, y=250, anchor="center")
-	
+
 	label_pedir_database = ttk.Label(root, text="Por favor, introduzca el nombre de la base de datos:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_database.place(relx=0.5, y=100, anchor="center")
 
@@ -226,7 +236,7 @@ def putsDatabaseItems(go_to_monitor=False):
 
 def seleccionarTelegramUser(muestraAviso=True):
 	global telegram_username
-	
+
 	telegram_username = input_telegram.get()
 	set_key(".env", "TELEGRAM_USER", telegram_username)
 
@@ -236,15 +246,15 @@ def seleccionarTelegramUser(muestraAviso=True):
 
 	putMonitorItems()
 
-	if muestraAviso:	
+	if muestraAviso:
 		putAviso()
 
 def putsTelegramItems(muestraAviso=True):
 	global input_telegram, boton_submit_telegram, label_pedir_telegram
-	
+
 	root.geometry("600x300")
 	centrarVentana(root)
-	
+
 	input_telegram = ttk.Entry(root, style='info.TEntry')
 	input_telegram.bind("<KeyRelease>", lambda event: verificarContenido(input_telegram,boton_submit_telegram))
 	input_telegram.place(relx=0.5, y=160, anchor="center")
@@ -252,17 +262,17 @@ def putsTelegramItems(muestraAviso=True):
 
 	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(muestraAviso), style='success.TButton')
 	boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
-	
+
 	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
 
-########################AVISOS########################
+######################## AVISOS ########################
 
 def putAviso():
 	ventana_aviso = tk.Toplevel()
 	ventana_aviso.title("Aviso")
 	ventana_aviso.geometry("450x150")
-	
+
 	label_aviso = ttk.Label(ventana_aviso, text="Se han guardado los archivos de configuración en .env.\n\nPara modificarlos, selccionelo abajo a la izquierda y \npulsa el botón de modificar.", font="Helvetica 12 bold", style='info.TLabel')
 	label_aviso.place(relx=0.5, rely=0.3, anchor="center")
 
@@ -271,10 +281,10 @@ def putAviso():
 
 	centrarVentana(ventana_aviso)
 
-########################VENTANA PRINCIPAL PARA MONITORIZAR########################
+######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-	global anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
-	
+	global graph_thread, slider_label, root, anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+
 	root.attributes('-zoomed', True)
 
 	scrolled_text_baneos = ScrolledText(root, width=172,  height=10, state='disabled')
@@ -282,9 +292,8 @@ def putMonitorItems():
 
 	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
-	graph = GraphPage.GraphPage(root, 60, anti_dos)
-	graph.place(relx=0.6, y=420, anchor="center")
-	threading_graph()
+	print("EJECUTANDO ESTO")
+	graph_thread = actualizarGrafica(60)
 
 	root.style.configure('success.TButton', font=('Helvetica', 20))
 	root.style.configure('warning.TButton', font=('Helvetica', 20))
@@ -320,6 +329,37 @@ def putMonitorItems():
 	menu_botones['menu'] = menu
 	menu_botones.place(relx=0.12, y=825, anchor="center")
 
+	# Slider para controlar el numero de segundos a mostrar en la grafica
+	slider_label = ttk.Label(root, text="Número de segundos a mostrar: 60", font="Helvetica 14 bold", style='info.TLabel',
+							 foreground='#247ca5')
+	slider_label.place(relx=0.35, y=725, anchor="center")
+
+	#slider = tk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
+	min = 20
+	max = 120
+	slider = customtkinter.CTkSlider(master=root, from_=min, to=max, width=500, command=cambioSlider, number_of_steps=max - min)
+	slider.place(relx=0.6, y=725, anchor="center")
+
+
+def cambioSlider(value):
+	global timer, root, slider_label
+	if timer is not None:
+		root.after_cancel(timer)
+	timer = root.after(250, lambda:actualizarGrafica(value))
+	slider_label.config(text=f"Número de segundos a mostrar: {int(value)}")
+
+
+def actualizarGrafica(tiempo):
+	global graph, graph_thread
+	tiempo = int(tiempo)
+	print(tiempo)
+
+	graph = GraphPage.GraphPage(root, tiempo, anti_dos)
+	graph.place(relx=0.6, y=370, anchor="center")
+	if not graph_thread:
+		graph_thread = threading_graph()
+	return graph_thread
+
 
 def seleccionarParametro():
 	"""
@@ -334,16 +374,33 @@ def actualizarScrolledTest(texto):
 	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
 	scrolled_text_baneos.config(state='disabled')
 
-def	threading_graph():	
-	thread_graph = Thread(target=animate_graph)
-	thread_graph.start()
+def	threading_graph():
+	global graph_thread
 
-def animate_graph():
-	graph.animate()
+	if graph_thread:
+		print("PARANDO")
+		graph_thread.stop()
 
-def threading(): 
-    monitor_thread=Thread(target=comenzarMonitor) 
-    monitor_thread.start() 
+	if not graph_thread:
+		graph_thread = Thread(target=animateGraph)
+	graph_thread.start()
+	return graph_thread
+
+def animateGraph():
+	global graph, anti_dos, root, tiempo_grafica
+	if tiempo_grafica:
+		tiempo_grafica = int(tiempo_grafica)
+	else:
+		tiempo_grafica = 60
+	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos)
+	graph.place(relx=0.6, y=370, anchor="center")
+	while True:
+		graph.animate()
+		time.sleep(1)
+
+def threading():
+    monitor_thread=Thread(target=comenzarMonitor)
+    monitor_thread.start()
 
 def comenzarMonitor():
 	scrolled_text_baneos.tag_config("mi_color", foreground="#0dc526", font=("Helvetica", 12, "bold"))
@@ -382,7 +439,7 @@ def modificarParametro():
 		root.style.configure('warning.TButton', font=('Helvetica', 12))
 		root.style.configure('danger.TButton', font=('Helvetica', 12))
 		root.style.configure('info.TButton', font=('Helvetica', 12))
-	
+
 	if parametro == "Todos":
 		putServerItems()
 	elif parametro == "Server":
