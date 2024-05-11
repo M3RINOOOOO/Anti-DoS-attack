@@ -80,50 +80,73 @@ def main():
                 print(f"[-] Archivo de configuración: {config_path}")
                 set_key(".env", "CONFIG_PATH", config_path)
 
-                ## PEDIR ARCHIVO DE BASE DE DATOS
-
-                menu = TerminalMenu([config.DATABASE_FILE, "Ruta personalizada"], title="[+] Selecciona el archivo de base de datos\n[*] Sugerencia:")
-                indice = menu.show()
-
-                if indice == 1:
-                    database_file = input("Introduce el nombre del archivo de base de datos: ")
-                else:
-                    database_file = config.DATABASE_FILE
-
-                print(f"[-] Archivo de base de datos: {database_file}")
-                set_key(".env", "DATABASE_FILE", database_file)
-
-                ## PEDIR USUARIO DE TELEGRAM
-
-                menu = TerminalMenu(["Saltar", "Introducir usuario"], title="[+] Introduce tu usuario de Telegram si quieres recibir notificaciones")
-                indice = menu.show()
-
-                telegram_user = None
-                if indice == 1:
-                    telegram_user = input("Introduce tu usuario de Telegram: ")
-
-                if telegram_user:
-                    print(f"[-] Usuario de Telegram: {telegram_user}")
-                    set_key(".env", "TELEGRAM_USER", telegram_user)
-
-                anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, ban_path, "%d/%b/%Y:%H:%M:%S %z", database_file,
-                                                 telegram_user)
-                print("\n[+] Monitorizando...")
-                anti_dos.monitor()
-
-
             else:
-
                 ## PEDIR ARCHIVO DE LOGS
+                menu = TerminalMenu(config.NGINX_LOG_PATHS + ["Ruta personalizada"],
+                                    title="[+] Selecciona el archivo de logs\n[*] Las rutas de logs más comunes son:")
+                indice = menu.show()
+
+                if indice == len(config.NGINX_LOG_PATHS):
+                    log_path = input("Introduce la ruta del log: ")
+                else:
+                    log_path = config.NGINX_LOG_PATHS[indice]
+
+                print(f"[-] Archivo de logs: {log_path}")
+                set_key(".env", "LOG_PATH", log_path)
 
                 ## PEDIR ARCHIVO DE BANS
 
-                ## PEDIR ARCHIVO DE CONFIGURACION
+                menu = TerminalMenu(config.NGINX_BAN_PATH + ["Ruta personalizada"],
+                                    title="[+] Selecciona el archivo de baneos de Nginx\n[*] Es el mismo que el archivo de configuración")
+                indice = menu.show()
 
-                ## PEDIR ARCHIVO DE BASE DE DATOS
+                if indice == len(config.NGINX_BAN_PATH):
+                    ban_path = input("Introduce la ruta del archivo de baneos: ")
+                else:
+                    ban_path = config.NGINX_BAN_PATH[indice]
 
-                ## PEDIR USUARIO DE TELEGRAM
-                pass
+                print(f"[-] Archivo de baneos: {ban_path}")
+                set_key(".env", "BAN_PATH", ban_path)
+
+                ## ARCHIVO DE CONFIGURACION (Es el mismo que el de baneos)
+
+                config_path = ban_path
+                print(f"[-] Archivo de configuración de Nginx: {config_path}")
+                set_key(".env", "CONFIG_PATH", config_path)
+
+            ## PEDIR ARCHIVO DE BASE DE DATOS
+
+            menu = TerminalMenu([config.DATABASE_FILE, "Ruta personalizada"],
+                                title="[+] Selecciona el archivo de base de datos\n[*] Sugerencia:")
+            indice = menu.show()
+
+            if indice == 1:
+                database_file = input("Introduce el nombre del archivo de base de datos: ")
+            else:
+                database_file = config.DATABASE_FILE
+
+            print(f"[-] Archivo de base de datos: {database_file}")
+            set_key(".env", "DATABASE_FILE", database_file)
+
+            ## PEDIR USUARIO DE TELEGRAM
+
+            menu = TerminalMenu(["Saltar", "Introducir usuario"],
+                                title="[+] Introduce tu usuario de Telegram si quieres recibir notificaciones")
+            indice = menu.show()
+
+            telegram_user = None
+            if indice == 1:
+                telegram_user = input("Introduce tu usuario de Telegram: ")
+
+            if telegram_user:
+                print(f"[-] Usuario de Telegram: {telegram_user}")
+                set_key(".env", "TELEGRAM_USER", telegram_user)
+
+            anti_dos = AntiDOSWeb.AntiDOSWeb(server, config_path, log_path, ban_path, "%d/%b/%Y:%H:%M:%S %z", database_file,
+                                             telegram_user)
+            print("\n[+] Monitorizando...")
+            anti_dos.monitor()
+
         except Exception as e:
             print("\n[!] Saliendo...")
             sys.exit(1)
@@ -164,7 +187,7 @@ def main():
             print("[!] Saliendo...")
             sys.exit(1)
 
-        anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, ban_path, "%d/%b/%Y:%H:%M:%S %z", database_file, telegram_user)
+        anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, config_path, ban_path, "%d/%b/%Y:%H:%M:%S %z", database_file, telegram_user)
         print("\n[+] Monitorizando...")
         anti_dos.monitor()
 
