@@ -337,11 +337,10 @@ def funcionSalir():
 
 def modificarParametro():
 
-	terminarMonitor()
-
 	parametro = opciones_parametros.get()
 
 	if parametro:
+		terminarMonitor()
 		root.attributes('-zoomed', False)
 		graph.destroy()
 		boton_monitor.destroy()
