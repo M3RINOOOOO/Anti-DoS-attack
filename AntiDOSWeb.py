@@ -212,7 +212,6 @@ class AntiDOSWeb:
         self.monitorizar = True
         while self.monitorizar:
             self.checkDisBan()
-            print("Monitorizando...")
             ult_mod_actual = os.stat(self.log_path).st_mtime
             if ult_mod_actual != self.ult_mod:
                 print("Se ha detectado un cambio en el archivo de logs")
