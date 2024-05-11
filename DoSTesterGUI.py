@@ -309,13 +309,25 @@ def putMonitorItems():
 
 	menu_botones = ttk.Menubutton(root, text='Seleccione el parámetro', style='info.Outline.TMenubutton')
 	menu = tk.Menu(menu_botones)
+	menu_botones.config(width=25)
+	menu_botones.pack(fill="x", padx=10, pady=10)
 
 	opciones_parametros = tk.StringVar()
+	opciones_parametros.trace_add('write', lambda *args: seleccionarParametro())
 	for option in ["Server", "Config_path", "Log_path", "Ban_path", "Database_name", "Telegram_user","Todos"]:
 		menu.add_radiobutton(label=option, value=option, variable=opciones_parametros)
 
 	menu_botones['menu'] = menu
 	menu_botones.place(relx=0.12, y=825, anchor="center")
+
+
+def seleccionarParametro():
+	"""
+	Actualiza el texto que aparece en el menú desplegable para seleccionar el parámetro a modificar
+	"""
+	parametro_elegido = opciones_parametros.get()
+	menu_botones.config(text=parametro_elegido)
+
 
 def actualizarScrolledTest(texto):
 	scrolled_text_baneos.config(state='normal')
