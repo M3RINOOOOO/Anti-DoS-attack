@@ -6,16 +6,23 @@ from datetime import datetime, timedelta
 from random import randint
 import matplotlib.dates as mdates
 import AntiDOSWeb
-
+import seaborn as sns
 
 class GraphPage(tk.Frame):
 
     def __init__(self, parent, num_segs, anti_dos):
+
+        sns.set_style("whitegrid")
+        blue, = sns.color_palette("muted", 1)
+
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
-        self.figure = Figure(figsize=(10, 5), dpi=100)
+        self.figure = Figure(figsize=(14, 7), dpi=100)
+        self.figure.set_facecolor('#2CB57E')  
+        self.figure.suptitle("Peticiones recibidas por segundo", fontsize=16)
         self.ax = self.figure.add_subplot(111)
+
         # format the x-axis to show the time
         myFmt = mdates.DateFormatter("%H:%M:%S")
         self.ax.xaxis.set_major_formatter(myFmt)
@@ -24,13 +31,17 @@ class GraphPage(tk.Frame):
         dateTimeObj = datetime.now() + timedelta(seconds=-num_segs)
         self.x_data = [dateTimeObj + timedelta(seconds=i) for i in range(num_segs)]
         self.y_data = [0 for i in range(num_segs)]
+
         # create the plot
-        self.plot = self.ax.plot(self.x_data, self.y_data, label='CPU')[0]
+        self.plot = self.ax.plot(self.x_data, self.y_data, color=blue, label='Peticiones')[0]
+        self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3)
+
         self.ax.set_ylim(0, 10)
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
 
-        label = tk.Label(self, text="Example of Live Plotting")
-        label.pack(pady=10, padx=10)
+        self.ax.grid('on')
+        self.ax.set_facecolor('#C5DECD')  
+        
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
