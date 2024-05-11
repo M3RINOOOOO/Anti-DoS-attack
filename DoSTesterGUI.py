@@ -52,9 +52,11 @@ def seleccionarServidor(servidor,go_to_monitor=False):
 
 	main_server = servidor
 	set_key(".env", "SERVER", servidor)
+
 	label_servidor.destroy()
 	boton_apache.destroy()
 	boton_nginx.destroy()
+
 	if go_to_monitor:
 		putMonitorItems()
 	else:
@@ -84,12 +86,12 @@ def putServerItems(go_to_monitor=False):
 def seleccionarRutaConfig(go_to_monitor=False):
 	global main_config_path
 
-	main_config_path = input_config.get()
+	main_config_path = combo_box_config.get()
 	set_key(".env", "CONFIG_PATH", main_config_path)
+
 	label_pedir_config.destroy()
-	input_config.destroy()
-	label_config.destroy()
 	boton_submit_config.destroy()
+	combo_box_config.destroy()
 
 	if go_to_monitor:
 		putMonitorItems()
@@ -97,150 +99,131 @@ def seleccionarRutaConfig(go_to_monitor=False):
 		putLogsItems()
 
 def putConfigItems(go_to_monitor=False):
-	global input_config, boton_submit_config, label_pedir_config, label_config
+	global combo_box_config, boton_submit_config, label_pedir_config
 	
 	root.geometry("600x300")
 	centrarVentana(root)
 
-	input_config = ttk.Entry(root, style='info.TEntry')
-	input_config.bind("<KeyRelease>", lambda event: verificarContenido(input_config,boton_submit_config))
-	input_config.place(relx=0.5, y=200, anchor="center")
+	if main_server=="apache":
+		combo_box_config = ttk.Combobox(root, style="TCombobox", values=config.APACHE_CONFIG_PATH,width=50)
+	elif main_server=="nginx":
+		combo_box_config = ttk.Combobox(root, style="TCombobox", values=config.NGINX_CONFIG_PATH,width=50)
 
-	boton_submit_config = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaConfig(go_to_monitor), style='success.TButton')
-	boton_submit_config.place(relx=0.5, y=250, anchor="center")
+	combo_box_config.current(0)  
+	combo_box_config.place(relx=0.5, y=160, anchor="center")
+
+	boton_submit_config = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaConfig(go_to_monitor), style='success.TButton')
+	boton_submit_config.place(relx=0.5, y=230, anchor="center")
 	
 	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Arial 12")
 	label_pedir_config.place(relx=0.5, y=100, anchor="center")
-
-	if main_server=="apache":
-		label_config = ttk.Label(root, text="Rutas usuales donde se encuentran los archivos de configuración en Apache2 :\n/etc/apache2/apache2.conf", font="Arial 12")
-		label_config.place(relx=0.5, y=150, anchor="center")
 
 ########################SELECCIÓN RUTA LOGS########################
 
 def seleccionarRutaLogs(go_to_monitor=False):
 	global main_log_path
 
-	main_log_path = input_logs.get()
+	main_log_path = combo_box_logs.get()
 	set_key(".env", "LOG_PATH", main_log_path)
+
 	label_pedir_logs.destroy()
-	input_logs.destroy()
-	label_logs.destroy()
 	boton_submit_logs.destroy()
+	combo_box_logs.destroy()
+
 	if go_to_monitor:
 		putMonitorItems()
 	else:
 		putBansItems()
 
 def putLogsItems(go_to_monitor=False):
-	global boton_submit_logs, input_logs, label_pedir_logs, label_logs
+	global combo_box_logs, boton_submit_logs, label_pedir_logs
 
-	if main_server=="apache":
-		root.geometry("600x400")
-	elif main_server=="nginx":
-		root.geometry("600x300")
+	root.geometry("600x300")
 	centrarVentana(root)
 
-	input_logs = ttk.Entry(root, style='info.TEntry')
-	input_logs.bind("<KeyRelease>", lambda event: verificarContenido(input_logs,boton_submit_logs))
-
 	if main_server=="apache":
-		input_logs.place(relx=0.5, y=300, anchor="center")
+		combo_box_logs = ttk.Combobox(root, style="TCombobox", values=config.APACHE_LOG_PATHS,width=50)
 	elif main_server=="nginx":
-		input_logs.place(relx=0.5, y=210, anchor="center")
+		combo_box_logs = ttk.Combobox(root, style="TCombobox", values=config.NGINX_LOG_PATHS,width=50)
 
-	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaLogs(go_to_monitor), style='success.TButton')
-	
-	if main_server=="apache":
-		boton_submit_logs.place(relx=0.5, y=350, anchor="center")
-	elif main_server=="nginx":
-		boton_submit_logs.place(relx=0.5, y=260, anchor="center")
+	combo_box_logs.current(0)  
+	combo_box_logs.place(relx=0.5, y=160, anchor="center")
 
-	label_pedir_logs = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los logs del servidor.", font="Arial 15")
+	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaLogs(go_to_monitor), style='success.TButton')
+	boton_submit_logs.place(relx=0.5, y=250, anchor="center")
+
+	label_pedir_logs = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los logs del servidor:", font="Arial 12")
 	label_pedir_logs.place(relx=0.5, y=100, anchor="center")
-
-	if main_server=="apache":
-		label_logs = ttk.Label(root, text="Rutas usuales donde se encuentran los logs en Apache2 :\n/var/log/apache2/access.log\n/var/log/apache/access.log\n/var/log/httpd/access.log\n/var/log/httpd/access_log\n/var/log/httpd-access.log", font="Arial 12")
-		label_logs.place(relx=0.5, y=200, anchor="center")
-
-	elif main_server=="nginx":
-		label_logs = ttk.Label(root, text="Rutas usuales donde se encuentran los logs en Nginx :\n/var/log/nginx/access.log", font="Arial 12")
-		label_logs.place(relx=0.5, y=150, anchor="center")
 
 ########################SELECCIÓN RUTA BANS########################  MAL
 
 def seleccionarRutaBans(go_to_monitor=False):
 	global main_ban_path
 
-	main_ban_path = input_bans.get()
+	main_ban_path = combo_box_bans.get()
 	set_key(".env", "BAN_PATH", main_ban_path)
+	
 	label_pedir_bans.destroy()
-	input_bans.destroy()
-	label_bans.destroy()
 	boton_submit_bans.destroy()
+	combo_box_bans.destroy()
+
 	if go_to_monitor:
 		putMonitorItems()
 	else:
 		putsDatabaseItems()
 
 def putBansItems(go_to_monitor=False):
-	global boton_submit_bans, input_bans, label_pedir_bans, label_bans
+	global combo_box_bans, boton_submit_bans, label_pedir_bans
 
 	root.geometry("600x300")
 	centrarVentana(root)
-	
-	input_bans = ttk.Entry(root, style='info.TEntry')
-	input_bans.bind("<KeyRelease>", lambda event: verificarContenido(input_bans,boton_submit_bans))
-	input_bans.place(relx=0.5, y=200, anchor="center")
-
-	boton_submit_bans = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarRutaBans(go_to_monitor), style='success.TButton')
-	boton_submit_bans.place(relx=0.5, y=250, anchor="center")
-	
-	label_pedir_bans = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de bans:", font="Arial 12")
-	label_pedir_bans.place(relx=0.5, y=100, anchor="center")
 
 	if main_server=="apache":
-		label_bans = ttk.Label(root, text="Rutas usuales donde se encuentran los bans en Apache2 :\n/var/www/html/.htaccess", font="Arial 12")
-		label_bans.place(relx=0.5, y=150, anchor="center")
-
+		combo_box_bans = ttk.Combobox(root, style="TCombobox", values=config.APACHE_BAN_PATH,width=50)
 	elif main_server=="nginx":
-		label_bans = ttk.Label(root, text="Rutas usuales donde se encuentran los bans en Nginx :\n/etc/nginx/sites-available/default", font="Arial 12")
-		label_bans.place(relx=0.5, y=150, anchor="center")
+		combo_box_bans = ttk.Combobox(root, style="TCombobox", values=config.NGINX_BAN_PATH,width=50)
+
+	combo_box_bans.current(0)  
+	combo_box_bans.place(relx=0.5, y=160, anchor="center")
+
+	boton_submit_bans = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaBans(go_to_monitor), style='success.TButton')
+	boton_submit_bans.place(relx=0.5, y=250, anchor="center")
+
+	label_pedir_bans = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los bans del servidor:", font="Arial 12")
+	label_pedir_bans.place(relx=0.5, y=100, anchor="center")
 
 ########################INTRODUCIÓN NOMBRE DATABASE########################
 
 def seleccionarNombreDatabase(go_to_monitor=False):
 	global data_base_name
 
-	data_base_name = input_database.get()
+	data_base_name = combo_box_database.get()
 	set_key(".env", "DATABASE_FILE", data_base_name)
+
 	label_pedir_database.destroy()
-	input_database.destroy()
-	label_database.destroy()
 	boton_submit_database.destroy()
+	combo_box_database.destroy()
+
 	if go_to_monitor:
 		putMonitorItems()
 	else:
 		putsTelegramItems()			
 
 def putsDatabaseItems(go_to_monitor=False):	
-	global boton_submit_database, input_database, label_pedir_database, label_database
+	global combo_box_database, boton_submit_database, label_pedir_database
 
 	root.geometry("600x300")
 	centrarVentana(root)
 	
-	input_database = ttk.Entry(root, style='info.TEntry')
-	input_database.bind("<KeyRelease>", lambda event: verificarContenido(input_database,boton_submit_database))
-	input_database.place(relx=0.5, y=200, anchor="center")
+	combo_box_database = ttk.Combobox(root, style="TCombobox", values=config.DATABASE_FILE,width=50)
+	combo_box_database.current(0)
+	combo_box_database.place(relx=0.5, y=160, anchor="center")
 
-	boton_submit_database = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarNombreDatabase(go_to_monitor), style='success.TButton')
+	boton_submit_database = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarNombreDatabase(go_to_monitor), style='success.TButton')
 	boton_submit_database.place(relx=0.5, y=250, anchor="center")
 	
 	label_pedir_database = ttk.Label(root, text="Por favor, introduzca el nombre de la base de datos:", font="Arial 12")
 	label_pedir_database.place(relx=0.5, y=100, anchor="center")
-
-	label_database = ttk.Label(root, text="Por defecto: ip_bans.db", font="Arial 12")
-	label_database.place(relx=0.5, y=150, anchor="center")
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
@@ -330,10 +313,6 @@ def funcionSalir():
 	sys.exit(1)
 
 def modificarParametro():
-	root.style.configure('success.TButton', font=('Helvetica', 12))
-	root.style.configure('warning.TButton', font=('Helvetica', 12))
-	root.style.configure('danger.TButton', font=('Helvetica', 12))
-	root.style.configure('info.TButton', font=('Helvetica', 12))
 
 	terminarMonitor()
 
@@ -348,6 +327,10 @@ def modificarParametro():
 		label_modificar_parametro.destroy()
 		boton_modificar_parametro.destroy()
 		menu_botones.destroy()
+		root.style.configure('success.TButton', font=('Helvetica', 12))
+		root.style.configure('warning.TButton', font=('Helvetica', 12))
+		root.style.configure('danger.TButton', font=('Helvetica', 12))
+		root.style.configure('info.TButton', font=('Helvetica', 12))
 	
 	if parametro == "Todos":
 		putServerItems()
