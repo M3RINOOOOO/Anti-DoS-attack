@@ -63,7 +63,6 @@ def seleccionarServidor(servidor,go_to_monitor=False):
 		if servidor=="apache":
 			putConfigItems()
 		elif servidor=="nginx":
-			set_key(".env", "SERVER", config.NGINX_BAN_PATH)
 			putLogsItems()
 
 def putServerItems(go_to_monitor=False):
@@ -113,7 +112,7 @@ def putConfigItems(go_to_monitor=False):
 	combo_box_config.place(relx=0.5, y=160, anchor="center")
 
 	boton_submit_config = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaConfig(go_to_monitor), style='success.TButton')
-	boton_submit_config.place(relx=0.5, y=230, anchor="center")
+	boton_submit_config.place(relx=0.5, y=250, anchor="center")
 	
 	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Arial 12")
 	label_pedir_config.place(relx=0.5, y=100, anchor="center")
@@ -227,28 +226,52 @@ def putsDatabaseItems(go_to_monitor=False):
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
-def seleccionarTelegramUser():
+def seleccionarTelegramUser(muestraAviso=True):
 	global telegram_username
-
+	
 	telegram_username = input_telegram.get()
 	set_key(".env", "TELEGRAM_USER", telegram_username)
+
 	input_telegram.destroy()
 	boton_submit_telegram.destroy()
 	label_pedir_telegram.destroy()
+
 	putMonitorItems()
 
-def putsTelegramItems():
+	if muestraAviso:	
+		putAviso()
+
+def putsTelegramItems(muestraAviso=True):
 	global input_telegram, boton_submit_telegram, label_pedir_telegram
+	
+	root.geometry("600x300")
+	centrarVentana(root)
 	
 	input_telegram = ttk.Entry(root, style='info.TEntry')
 	input_telegram.bind("<KeyRelease>", lambda event: verificarContenido(input_telegram,boton_submit_telegram))
-	input_telegram.place(relx=0.5, y=200, anchor="center")
+	input_telegram.place(relx=0.5, y=160, anchor="center")
 
-	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(), style='success.TButton')
+
+	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(muestraAviso), style='success.TButton')
 	boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
 	
 	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Arial 12")
 	label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
+
+########################AVISOS########################
+
+def putAviso():
+	ventana_aviso = tk.Toplevel()
+	ventana_aviso.title("Aviso")
+	ventana_aviso.geometry("400x150")
+	
+	label_aviso = ttk.Label(ventana_aviso, text="Se han guardado los archivos de configuración en .env.\n\nPara modificarlos, selccionelo abajo a la izquierda y \npulsa el botón de modificar.")
+	label_aviso.place(relx=0.5, rely=0.3, anchor="center")
+
+	boton_ok = ttk.Button(ventana_aviso, text="OK", width=12, command=ventana_aviso.destroy, style='info.TButton')
+	boton_ok.place(relx=0.5, rely=0.7, anchor="center")
+
+	centrarVentana(ventana_aviso)
 
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
 def putMonitorItems():
@@ -277,11 +300,11 @@ def putMonitorItems():
 	boton_cerrar = ttk.Button(root, text="Cerrar programa", width=25, command=funcionSalir, style='danger.TButton')
 	boton_cerrar.place(relx=0.12, y=360, anchor="center")
 
-	label_modificar_parametro = ttk.Label(root, text="Modificación de parámetros", font="Helvetica 25", style='info.Inverse.TLabel', foreground='#2C647E')
-	label_modificar_parametro.place(relx=0.12, y=650, anchor="center")
+	label_modificar_parametro = ttk.Label(root, text="Modificación de parámetros", font="Helvetica 22 bold", style='info.TLabel', foreground='#247ca5')
+	label_modificar_parametro.place(relx=0.12, y=775, anchor="center")
 
-	boton_modificar_parametro = ttk.Button(root, text="Modificar", width=15, command=modificarParametro, style='info.TButton')
-	boton_modificar_parametro.place(relx=0.12, y=749, anchor="center")
+	boton_modificar_parametro = ttk.Button(root, text="Modificar", width=15, command=modificarParametro, style='info.Outline.TButton')
+	boton_modificar_parametro.place(relx=0.12, y=875, anchor="center")
 
 	menu_botones = ttk.Menubutton(root, text='Seleccione el parámetro', style='info.Outline.TMenubutton')
 	menu = tk.Menu(menu_botones)
@@ -291,7 +314,7 @@ def putMonitorItems():
 		menu.add_radiobutton(label=option, value=option, variable=opciones_parametros)
 
 	menu_botones['menu'] = menu
-	menu_botones.place(relx=0.12, y=700, anchor="center")
+	menu_botones.place(relx=0.12, y=825, anchor="center")
 
 def threading(): 
     monitor_thread=Thread(target=comenzarMonitor) 
@@ -345,7 +368,7 @@ def modificarParametro():
 	elif parametro == "Database_name":
 		putsDatabaseItems(True)
 	elif parametro == "Telegram_user":
-		putsTelegramItems()
+		putsTelegramItems(False)
 
 ########################MAIN########################
 
