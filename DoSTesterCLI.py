@@ -34,99 +34,99 @@ def main():
     args = parseArgs()
 
     if args.interactive:
-        menu = TerminalMenu(config.SERVERS)
-        print("[+] Selecciona el servidor:")
-        indice = menu.show()
-        print(f"SERVER: {config.SERVERS[indice]}")
-        set_key(".env", "SERVER", config.SERVERS[indice])
-
-        if config.SERVERS[indice] == "apache":
-            ## PEDIR ARCHIVO DE LOGS
-            menu = TerminalMenu(config.APACHE_LOG_PATHS + ["Ruta personalizada"])
-            print("[+] Selecciona el archivo de logs")
-            print("[*] Las rutas de logs más comunes son:")
+        try:
+            menu = TerminalMenu(config.SERVERS, title="[+] Selecciona el servidor:")
             indice = menu.show()
+            server = config.SERVERS[indice]
+            print(f"[-] SERVER: {server}")
+            set_key(".env", "SERVER", server)
 
-            if indice == len(config.APACHE_LOG_PATHS):
-                log_path = input("Introduce la ruta del log: ")
+            if config.SERVERS[indice] == "apache":
+                ## PEDIR ARCHIVO DE LOGS
+                menu = TerminalMenu(config.APACHE_LOG_PATHS + ["Ruta personalizada"], title="[+] Selecciona el archivo de logs\n[*] Las rutas de logs más comunes son:")
+                indice = menu.show()
+
+                if indice == len(config.APACHE_LOG_PATHS):
+                    log_path = input("Introduce la ruta del log: ")
+                else:
+                    log_path = config.APACHE_LOG_PATHS[indice]
+
+                print(f"[-] Archivo de logs: {log_path}")
+                set_key(".env", "LOG_PATH", log_path)
+
+                ## PEDIR ARCHIVO DE BANS
+
+                menu = TerminalMenu([config.APACHE_BAN_PATH, "Ruta personalizada"], title="[+] Selecciona el archivo de baneos de Apache\n[*] Debe ser el archivo .htaccess de la ruta principal del servidor")
+                indice = menu.show()
+
+                if indice == 1:
+                    ban_path = input("Introduce la ruta del archivo de baneos: ")
+                else:
+                    ban_path = config.APACHE_BAN_PATH
+
+                print(f"[-] Archivo de baneos: {ban_path}")
+                set_key(".env", "BAN_PATH", ban_path)
+
+                ## PEDIR ARCHIVO DE CONFIGURACION
+
+                menu = TerminalMenu([config.APACHE_CONFIG_PATH, "Ruta personalizada"], title="[+] Selecciona el archivo de configuración de Apache\n[*] Suele estar en la ruta:")
+                indice = menu.show()
+
+                if indice == 1:
+                    config_path = input("Introduce la ruta del archivo de configuración: ")
+                else:
+                    config_path = config.APACHE_CONFIG_PATH
+
+                print(f"[-] Archivo de configuración: {config_path}")
+                set_key(".env", "CONFIG_PATH", config_path)
+
+                ## PEDIR ARCHIVO DE BASE DE DATOS
+
+                menu = TerminalMenu([config.DATABASE_FILE, "Ruta personalizada"], title="[+] Selecciona el archivo de base de datos\n[*] Sugerencia:")
+                indice = menu.show()
+
+                if indice == 1:
+                    database_file = input("Introduce el nombre del archivo de base de datos: ")
+                else:
+                    database_file = config.DATABASE_FILE
+
+                print(f"[-] Archivo de base de datos: {database_file}")
+                set_key(".env", "DATABASE_FILE", database_file)
+
+                ## PEDIR USUARIO DE TELEGRAM
+
+                menu = TerminalMenu(["Saltar", "Introducir usuario"], title="[+] Introduce tu usuario de Telegram si quieres recibir notificaciones")
+                indice = menu.show()
+
+                telegram_user = None
+                if indice == 1:
+                    telegram_user = input("Introduce tu usuario de Telegram: ")
+
+                if telegram_user:
+                    print(f"[-] Usuario de Telegram: {telegram_user}")
+                    set_key(".env", "TELEGRAM_USER", telegram_user)
+
+                anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, ban_path, "%d/%b/%Y:%H:%M:%S %z", database_file,
+                                                 telegram_user)
+                print("\n[+] Monitorizando...")
+                anti_dos.monitor()
+
+
             else:
-                log_path = config.APACHE_LOG_PATHS[indice]
 
-            print(f"Archivo de logs: {log_path}")
-            set_key(".env", "LOG_PATH", log_path)
+                ## PEDIR ARCHIVO DE LOGS
 
-            ## PEDIR ARCHIVO DE BANS
+                ## PEDIR ARCHIVO DE BANS
 
-            menu = TerminalMenu([config.APACHE_BAN_PATH, "Ruta personalizada"])
-            print("[+] Selecciona el archivo de baneos de Apache")
-            print("[*] Debe ser el archivo .htaccess de la ruta principal del servidor")
-            indice = menu.show()
+                ## PEDIR ARCHIVO DE CONFIGURACION
 
-            if indice == 1:
-                ban_path = input("Introduce la ruta del archivo de baneos: ")
-            else:
-                ban_path = config.APACHE_BAN_PATH
+                ## PEDIR ARCHIVO DE BASE DE DATOS
 
-            print(f"Archivo de baneos: {ban_path}")
-            set_key(".env", "BAN_PATH", ban_path)
-
-            ## PEDIR ARCHIVO DE CONFIGURACION
-
-            menu = TerminalMenu([config.APACHE_CONFIG_PATH, "Ruta personalizada"])
-            print("[+] Selecciona el archivo de configuración de Apache")
-            print("[*] Suele estar en la ruta:")
-            indice = menu.show()
-
-            if indice == 1:
-                config_path = input("Introduce la ruta del archivo de configuración: ")
-            else:
-                config_path = config.APACHE_CONFIG_PATH
-
-            print(f"Archivo de configuración: {config_path}")
-            set_key(".env", "CONFIG_PATH", config_path)
-
-            ## PEDIR ARCHIVO DE BASE DE DATOS
-
-            menu = TerminalMenu([config.DATABASE_FILE, "Ruta personalizada"])
-            print("[+] Selecciona el archivo de base de datos")
-            print("[*] Sugerencia:")
-            indice = menu.show()
-
-            if indice == 1:
-                database_file = input("Introduce el nombre del archivo de base de datos: ")
-            else:
-                database_file = config.DATABASE_FILE
-
-            print(f"Archivo de base de datos: {database_file}")
-            set_key(".env", "DATABASE_FILE", database_file)
-
-            ## PEDIR USUARIO DE TELEGRAM
-
-            menu = TerminalMenu(["Saltar", "Introducir usuario"])
-            print("[+] Introduce tu usuario de Telegram si quieres recibir notificaciones")
-            indice = menu.show()
-
-            telegram_user = None
-            if indice == 1:
-                telegram_user = input("Introduce tu usuario de Telegram: ")
-
-            if telegram_user:
-                print(f"Usuario de Telegram: {telegram_user}")
-                set_key(".env", "TELEGRAM_USER", telegram_user)
-
-
-        else:
-
-            ## PEDIR ARCHIVO DE LOGS
-
-            ## PEDIR ARCHIVO DE BANS
-
-            ## PEDIR ARCHIVO DE CONFIGURACION
-
-            ## PEDIR ARCHIVO DE BASE DE DATOS
-
-            ## PEDIR USUARIO DE TELEGRAM
-            pass
+                ## PEDIR USUARIO DE TELEGRAM
+                pass
+        except Exception as e:
+            print("\n[!] Saliendo...")
+            sys.exit(1)
     else:
         server = args.server.lower() if args.server else os.getenv("SERVER")
         ban_path = args.ban_path if args.ban_path else os.getenv("BAN_PATH")
