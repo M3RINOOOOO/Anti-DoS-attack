@@ -1,5 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
+from tkinter.scrolledtext import ScrolledText
 import sys, signal
 import config
 import AntiDOSWeb
@@ -42,7 +43,7 @@ def crearVentanaPrincipal():
 	root.title("DoS Tester GUI")
 	imagen_icono = tk.PhotoImage(file="images/kaki.png")
 	root.iconphoto(True, imagen_icono)
-	label_titulo = ttk.Label(root, text="DoS Tester", font=("Arial", 30, "bold"))
+	label_titulo = ttk.Label(root, text="DoS Tester", font="Helvetica 30 bold", style='info.TLabel', foreground='#247ca5')
 	label_titulo.place(relx=0.5, y=30, anchor="center")
 
 ########################SELECCIÓN SERVIDOR########################
@@ -60,10 +61,7 @@ def seleccionarServidor(servidor,go_to_monitor=False):
 	if go_to_monitor:
 		putMonitorItems()
 	else:
-		if servidor=="apache":
-			putConfigItems()
-		elif servidor=="nginx":
-			putLogsItems()
+		putConfigItems()
 
 def putServerItems(go_to_monitor=False):
 	global label_servidor, boton_apache, boton_nginx
@@ -71,7 +69,7 @@ def putServerItems(go_to_monitor=False):
 	root.geometry("400x180")
 	centrarVentana(root)
 
-	label_servidor = ttk.Label(root, text="Por favor, seleccione el servidor a monitorizar:", font=("Arial", 12))
+	label_servidor = ttk.Label(root, text="Por favor, seleccione el servidor a monitorizar:", font="Helvetica 12 bold", style='info.TLabel')
 	label_servidor.place(relx=0.5, y=80, anchor="center")
 
 	boton_apache = ttk.Button(root, text="Apache", width=15, command=lambda: seleccionarServidor("apache",go_to_monitor))
@@ -114,7 +112,7 @@ def putConfigItems(go_to_monitor=False):
 	boton_submit_config = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaConfig(go_to_monitor), style='success.TButton')
 	boton_submit_config.place(relx=0.5, y=250, anchor="center")
 	
-	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Arial 12")
+	label_pedir_config = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de configuración del servidor:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_config.place(relx=0.5, y=100, anchor="center")
 
 ########################SELECCIÓN RUTA LOGS########################
@@ -151,7 +149,7 @@ def putLogsItems(go_to_monitor=False):
 	boton_submit_logs = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaLogs(go_to_monitor), style='success.TButton')
 	boton_submit_logs.place(relx=0.5, y=250, anchor="center")
 
-	label_pedir_logs = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los logs del servidor:", font="Arial 12")
+	label_pedir_logs = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los logs del servidor:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_logs.place(relx=0.5, y=100, anchor="center")
 
 ########################SELECCIÓN RUTA BANS########################  MAL
@@ -188,7 +186,7 @@ def putBansItems(go_to_monitor=False):
 	boton_submit_bans = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarRutaBans(go_to_monitor), style='success.TButton')
 	boton_submit_bans.place(relx=0.5, y=250, anchor="center")
 
-	label_pedir_bans = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los bans del servidor:", font="Arial 12")
+	label_pedir_bans = ttk.Label(root, text="Por favor, introduzca la ruta del archivo de los bans del servidor:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_bans.place(relx=0.5, y=100, anchor="center")
 
 ########################INTRODUCIÓN NOMBRE DATABASE########################
@@ -221,7 +219,7 @@ def putsDatabaseItems(go_to_monitor=False):
 	boton_submit_database = ttk.Button(root, text="Enviar", width=15, command=lambda: seleccionarNombreDatabase(go_to_monitor), style='success.TButton')
 	boton_submit_database.place(relx=0.5, y=250, anchor="center")
 	
-	label_pedir_database = ttk.Label(root, text="Por favor, introduzca el nombre de la base de datos:", font="Arial 12")
+	label_pedir_database = ttk.Label(root, text="Por favor, introduzca el nombre de la base de datos:", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_database.place(relx=0.5, y=100, anchor="center")
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
@@ -255,7 +253,7 @@ def putsTelegramItems(muestraAviso=True):
 	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(muestraAviso), style='success.TButton')
 	boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
 	
-	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Arial 12")
+	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Helvetica 12 bold", style='info.TLabel')
 	label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
 
 ########################AVISOS########################
@@ -263,23 +261,26 @@ def putsTelegramItems(muestraAviso=True):
 def putAviso():
 	ventana_aviso = tk.Toplevel()
 	ventana_aviso.title("Aviso")
-	ventana_aviso.geometry("400x150")
+	ventana_aviso.geometry("450x150")
 	
-	label_aviso = ttk.Label(ventana_aviso, text="Se han guardado los archivos de configuración en .env.\n\nPara modificarlos, selccionelo abajo a la izquierda y \npulsa el botón de modificar.")
+	label_aviso = ttk.Label(ventana_aviso, text="Se han guardado los archivos de configuración en .env.\n\nPara modificarlos, selccionelo abajo a la izquierda y \npulsa el botón de modificar.", font="Helvetica 12 bold", style='info.TLabel')
 	label_aviso.place(relx=0.5, rely=0.3, anchor="center")
 
-	boton_ok = ttk.Button(ventana_aviso, text="OK", width=12, command=ventana_aviso.destroy, style='info.TButton')
+	boton_ok = ttk.Button(ventana_aviso, text="OK", width=12, command=ventana_aviso.destroy, style='success.TButton')
 	boton_ok.place(relx=0.5, rely=0.7, anchor="center")
 
 	centrarVentana(ventana_aviso)
 
 ########################VENTANA PRINCIPAL PARA MONITORIZAR########################
 def putMonitorItems():
-	global anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu
+	global anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
 	
 	root.attributes('-zoomed', True)
 
-	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username)
+	scrolled_text_baneos = ScrolledText(root, width=172,  height=10, state='disabled')
+	scrolled_text_baneos.place(relx=0.6, y=870, anchor="center")
+
+	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
 	graph = GraphPage.GraphPage(root, 60, anti_dos)
 	graph.place(relx=0.6, y=420, anchor="center")
@@ -316,16 +317,25 @@ def putMonitorItems():
 	menu_botones['menu'] = menu
 	menu_botones.place(relx=0.12, y=825, anchor="center")
 
+def actualizarScrolledTest(texto):
+	scrolled_text_baneos.config(state='normal')
+	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
+	scrolled_text_baneos.config(state='disabled')
+
 def threading(): 
     monitor_thread=Thread(target=comenzarMonitor) 
     monitor_thread.start() 
 
 def comenzarMonitor():
+	scrolled_text_baneos.tag_config("mi_color", foreground="#0dc526", font=("Helvetica", 12, "bold"))
+	actualizarScrolledTest("[+] Monitorizando...\n")
 	boton_monitor.config(state=tk.DISABLED)
 	boton_parar_monitor.config(state=tk.NORMAL)
 	anti_dos.monitor()
 
 def terminarMonitor():
+	scrolled_text_baneos.tag_config("mi_color", foreground="orange", font=("Helvetica", 12, "bold"))
+	actualizarScrolledTest("\n[!] Monitorización detenida\n\n")
 	boton_parar_monitor.config(state=tk.DISABLED)
 	boton_monitor.config(state=tk.NORMAL)
 	anti_dos.terminarMonitor()
@@ -337,11 +347,10 @@ def funcionSalir():
 
 def modificarParametro():
 
-	terminarMonitor()
-
 	parametro = opciones_parametros.get()
 
 	if parametro:
+		terminarMonitor()
 		root.attributes('-zoomed', False)
 		graph.destroy()
 		boton_monitor.destroy()

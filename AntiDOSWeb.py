@@ -4,10 +4,11 @@ import config
 import requests
 from datetime import datetime
 import sqlite3
+import tkinter as tk
 
 class AntiDOSWeb:
 ########################################  CONSTRUCTOR   ########################################
-    def __init__(self, server, config_path, log_path, ban_path, formato_fecha, sqlite_path, telegram_user):
+    def __init__(self, server, config_path, log_path, ban_path, formato_fecha, sqlite_path, telegram_user, scroll_gui=False):
         self.server = server
         self.config_path = config_path
         self.log_path = log_path
@@ -15,6 +16,7 @@ class AntiDOSWeb:
         self.formato_fecha = formato_fecha
         self.sqlite_path = sqlite_path
         self.telegram_user = telegram_user
+        self.scroll_gui = scroll_gui
         self.ult_mod = os.stat(log_path).st_mtime        
         self.ips_horas = {}
         self.inicializarBaseDatos()
@@ -164,7 +166,12 @@ class AntiDOSWeb:
                     self.enviarAvisoPorTelegram(ip)
 
                     self.actualizarBaseDatos(ip,True)
-                    print(f"La IP {ip} ha sido baneada")
+                    if self.scroll_gui:
+                        self.scroll_gui.config(state='normal')
+                        self.scroll_gui.insert(tk.END, f"[-] La IP {ip} ha sido baneada\n", "mi_color")
+                        self.scroll_gui.config(state='disabled')
+                    else:
+                        print(f"La IP {ip} ha sido baneada")
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
@@ -205,7 +212,12 @@ class AntiDOSWeb:
         for ip in self.ips_baneadas:
             tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] - 1) * config.TIEMPO_BANEO
             if self.ips_baneadas[ip]["last_ban"] + tiempo_baneado <= datetime.now().timestamp() and (self.ips_baneadas[ip]["is_banned"]):
-                print(f"La IP {ip} ha sido desbaneada")
+                if self.scroll_gui:
+                    self.scroll_gui.config(state='normal')
+                    self.scroll_gui.insert(tk.END, f"[-] La IP {ip} ha sido desbaneada\n", "mi_color")
+                    self.scroll_gui.config(state='disabled')
+                else:
+                    print(f"La IP {ip} ha sido desbaneada")
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
 
