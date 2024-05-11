@@ -7,8 +7,9 @@ import sqlite3
 
 class AntiDOSWeb:
 ########################################  CONSTRUCTOR   ########################################
-    def __init__(self, server, log_path, ban_path, formato_fecha, sqlite_path, telegram_user):
+    def __init__(self, server, config_path, log_path, ban_path, formato_fecha, sqlite_path, telegram_user):
         self.server = server
+        self.config_path = config_path
         self.log_path = log_path
         self.ban_path = ban_path
         self.formato_fecha = formato_fecha

@@ -18,8 +18,9 @@ class GraphPage(tk.Frame):
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
-        self.figure = Figure(figsize=(10, 5), dpi=100)
+        self.figure = Figure(figsize=(14, 7), dpi=100)
         self.figure.set_facecolor('#2CB57E')  
+        self.figure.suptitle("Peticiones recibidas por segundo", fontsize=16)
         self.ax = self.figure.add_subplot(111)
 
         # format the x-axis to show the time
@@ -39,11 +40,8 @@ class GraphPage(tk.Frame):
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
 
         self.ax.grid('on')
-        
         self.ax.set_facecolor('#C5DECD')  
         
-        label = tk.Label(self, text="Peticiones recibidas por segundo", font=("Arial", 12))
-        label.pack(pady=10, padx=10)
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
