@@ -69,7 +69,7 @@ class GraphPage(tk.Frame):
         return y_valores
 
     def nuevoElemento(self, tiempo):
-        horas_actividad = self.anti_dos.extraerHorasActividad()
+        horas_actividad = self.anti_dos.extraerHorasActividad(tiempo)
         elemento = 0
         tiempo = int(tiempo)
         if tiempo - 1 in horas_actividad:

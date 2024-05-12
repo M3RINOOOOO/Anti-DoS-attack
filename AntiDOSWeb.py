@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 import sqlite3
 import tkinter as tk
+from file_read_backwards import FileReadBackwards
 
 class AntiDOSWeb:
 ########################################  CONSTRUCTOR   ########################################
@@ -20,16 +21,28 @@ class AntiDOSWeb:
         self.ult_mod = os.stat(log_path).st_mtime        
         self.ips_horas = {}
         self.inicializarBaseDatos()
+        self.lineas_leidas = 0
 
 ######################################## GESTIÓN DE LOGS   ########################################
     def leerRegistros(self):
+        try:
+            with open(self.log_path, "r") as log:
+                #for i in range(0, self.lineas_leidas):
+                #    next(log)
+                registros = log.read()
+
+            return registros
+        except Exception as e:
+            return f"Error al leer los registros: {e}"
+
+    def leerRegistrosCompletos(self):
         try:
             with open(self.log_path, "r") as log:
                 registros = log.read()
 
             return registros
         except Exception as e:
-            return f"Error al leer los registros: {e}"    
+            return f"Error al leer los registros: {e}"
         
     def extraerIpsHoras(self):
         ips_horas = {}
@@ -40,14 +53,13 @@ class AntiDOSWeb:
         ips_desbanedas = self.obtenerIpsDesbaneadas()
 
         for match in matches:
+            #self.lineas_leidas += 1
             ip = match[0]
             hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
-
 
             fecha_ultimo_baneo = 0
             if ip in self.ips_baneadas:
                 fecha_ultimo_baneo = self.ips_baneadas[ip]["last_ban"]
-
 
             if not (ip in ips_desbanedas and hora <= fecha_ultimo_baneo):
                 if ip in ips_horas:
@@ -61,22 +73,26 @@ class AntiDOSWeb:
         self.ips_horas = ips_horas
 
 
-    def extraerHorasActividad(self):
+    def extraerHorasActividad(self, tiempo=0):
         horas_actividad = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\] ".*?" (\d{3}) \d+ "-" ".*?"'
-        registros = self.leerRegistros()
-        matches = re.findall(patron, registros)
 
-        for match in matches:
-            ip = match[0]
-            hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
-            codigo = int(match[2])
+        with FileReadBackwards(self.log_path, encoding="utf-8") as log:
+            for l in log:
+                matches = re.findall(patron, l)
+                if len(matches) > 0:
+                    match = matches[0]
+                    hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
 
-            if codigo != 403:
-                if hora in horas_actividad:
-                    horas_actividad[hora] += 1
-                else:
-                    horas_actividad[hora] = 1
+                    if hora < tiempo-10:
+                        break
+                    else:
+                        codigo = int(match[2])
+                        if codigo != 403:
+                            if hora in horas_actividad:
+                                horas_actividad[hora] += 1
+                            else:
+                                horas_actividad[hora] = 1
 
         return horas_actividad
 
