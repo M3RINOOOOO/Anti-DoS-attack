@@ -34,9 +34,7 @@ class GraphPage(tk.Frame):
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
         self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
-        print("a")
         self.full_y_data = self.extraerNumPeticiones(self.full_x_data)
-        print("b")
 
         self.setTime(num_segs)
 
@@ -71,7 +69,7 @@ class GraphPage(tk.Frame):
         return y_valores
 
     def nuevoElemento(self, tiempo):
-        horas_actividad = self.anti_dos.extraerHorasActividad()
+        horas_actividad = self.anti_dos.extraerHorasActividad(tiempo)
         elemento = 0
         tiempo = int(tiempo)
         if tiempo - 1 in horas_actividad:
