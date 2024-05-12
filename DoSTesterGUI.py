@@ -380,11 +380,12 @@ def actualizarScrolledTest(texto):
 
 
 def animateGraph():
-	global graph, anti_dos, root, tiempo_grafica, max, min
+	global graph, anti_dos, root, tiempo_grafica, max, min, animar
 	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
 	graph.setTime(tiempo_grafica)
 	graph.place(relx=0.6, y=370, anchor="center")
-	while True:
+	animar = True
+	while animar:
 		graph.animate()
 		time.sleep(1)
 
@@ -408,15 +409,18 @@ def terminarMonitor():
 	anti_dos.terminarMonitor()
 
 def funcionSalir():
+	global animar
+	animar = False
 	terminarMonitor()
 	print("\n\n[!] Saliendo...\n")
 	sys.exit(1)
 
 def modificarParametro():
-	global graph, graph_thread
+	global graph, graph_thread, animar
 	parametro = opciones_parametros.get()
 
 	if parametro:
+		animar = False
 		terminarMonitor()
 		root.attributes('-zoomed', False)
 		graph.destroy()
