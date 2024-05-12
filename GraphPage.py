@@ -8,19 +8,20 @@ import matplotlib.dates as mdates
 import AntiDOSWeb
 import seaborn as sns
 
+
 class GraphPage(tk.Frame):
 
     def __init__(self, parent, num_segs, anti_dos, max_segs):
         self.num_segs = num_segs
         self.max_segs = max_segs
         sns.set_style("whitegrid")
-        blue, = sns.color_palette("muted", 1)
+        self.blue, = sns.color_palette("muted", 1)
 
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
         self.figure = Figure(figsize=(14, 6), dpi=100)
-        self.figure.set_facecolor('#2CB57E')  
+        self.figure.set_facecolor('#2CB57E')
         self.figure.suptitle("Peticiones recibidas por segundo", fontsize=16)
         self.ax = self.figure.add_subplot(111)
 
@@ -33,39 +34,36 @@ class GraphPage(tk.Frame):
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
         self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
-        #self.y_data = [0 for i in range(num_segs)]
         self.full_y_data = [self.nuevoElemento(int(self.full_x_data[i].timestamp())) for i in range(max_segs)]
 
         self.setTime(num_segs)
 
         # create the plot
-        self.plot = self.ax.plot(self.x_data, self.y_data, color=blue, label='Peticiones')[0]
-        self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3)
+        self.plot = self.ax.plot(self.x_data, self.y_data, color=self.blue, label='Peticiones')[0]
+        self.fill_between = self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3, color=self.blue)
 
         self.ax.set_ylim(0, 10)
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
 
         self.ax.grid('on')
-        self.ax.set_facecolor('#C5DECD')  
-        
+        self.ax.set_facecolor('#C5DECD')
+
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
         self.animate()
-
 
     def nuevoElemento(self, tiempo):
         horas_actividad = self.anti_dos.extraerHorasActividad()
         elemento = 0
         tiempo = int(tiempo)
-        if tiempo-1 in horas_actividad:
-            elemento = horas_actividad[tiempo-1]
+        if tiempo - 1 in horas_actividad:
+            elemento = horas_actividad[tiempo - 1]
 
         return elemento
 
-
     def setTime(self, tiempo):
-        self.x_data = self.full_x_data[self.max_segs-tiempo:]
-        self.y_data = self.full_y_data[self.max_segs-tiempo:]
+        self.x_data = self.full_x_data[self.max_segs - tiempo:]
+        self.y_data = self.full_y_data[self.max_segs - tiempo:]
 
         self.num_segs = tiempo
 
@@ -79,10 +77,13 @@ class GraphPage(tk.Frame):
         self.full_y_data = self.full_y_data[1:]
         #  update plot data
         self.setTime(self.num_segs)
-        print(len(self.x_data))
+
         self.plot.set_xdata(self.x_data)
         self.plot.set_ydata(self.y_data)
+        self.fill_between.remove()
+        self.fill_between = self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3, color=self.blue)
+
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
-        self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data)*1.1))
+        self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data) * 1.1))
+
         self.canvas.draw_idle()  # redraw plot
-        #self.after(1000, self.animate)  # repeat after 1s
