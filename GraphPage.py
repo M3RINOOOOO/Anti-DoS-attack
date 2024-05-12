@@ -10,8 +10,9 @@ import seaborn as sns
 
 class GraphPage(tk.Frame):
 
-    def __init__(self, parent, num_segs, anti_dos):
+    def __init__(self, parent, num_segs, anti_dos, max_segs):
         self.num_segs = num_segs
+        self.max_segs = max_segs
         sns.set_style("whitegrid")
         blue, = sns.color_palette("muted", 1)
 
@@ -30,10 +31,12 @@ class GraphPage(tk.Frame):
         self.anti_dos = anti_dos
 
         # initial x and y data
-        dateTimeObj = datetime.now() + timedelta(seconds=-num_segs)
-        self.x_data = [dateTimeObj + timedelta(seconds=i) for i in range(num_segs)]
-        self.y_data = [0 for i in range(num_segs)]
-        #self.y_data = [self.nuevoElemento(int(self.x_data[i].timestamp())) for i in range(num_segs)]
+        dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
+        self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
+        #self.y_data = [0 for i in range(num_segs)]
+        self.full_y_data = [self.nuevoElemento(int(self.full_x_data[i].timestamp())) for i in range(max_segs)]
+
+        self.setTime(num_segs)
 
         # create the plot
         self.plot = self.ax.plot(self.x_data, self.y_data, color=blue, label='Peticiones')[0]
@@ -47,9 +50,7 @@ class GraphPage(tk.Frame):
         
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-
-
+        self.animate()
 
 
     def nuevoElemento(self, tiempo):
@@ -63,33 +64,22 @@ class GraphPage(tk.Frame):
 
 
     def setTime(self, tiempo):
-        if tiempo < self.num_segs:
-            self.x_data = self.x_data[len(self.x_data)-tiempo:]
-            self.y_data = self.y_data[len(self.y_data)-tiempo:]
-        elif tiempo > self.num_segs:
-            quedan = tiempo - self.num_segs
-            x_principio = []
-            y_principio = []
-            for i in range(quedan, 0, -1):
-                x_principio.append(self.x_data[0] + timedelta(seconds=-i))
-                y_principio.append(self.nuevoElemento(x_principio[-1].timestamp()))
-
-            self.x_data = x_principio + self.x_data
-            print(len(self.x_data))
-            self.y_data = y_principio + self.y_data
-            print(len(self.y_data))
+        self.x_data = self.full_x_data[self.max_segs-tiempo:]
+        self.y_data = self.full_y_data[self.max_segs-tiempo:]
 
         self.num_segs = tiempo
 
     def animate(self):
         # append new data point to the x and y data
         ahora = datetime.now()
-        self.x_data.append(ahora)
-        self.y_data.append(self.nuevoElemento(int(ahora.timestamp())))
+        self.full_x_data.append(ahora)
+        self.full_y_data.append(self.nuevoElemento(int(ahora.timestamp())))
         # remove oldest data point
-        self.x_data = self.x_data[1:]
-        self.y_data = self.y_data[1:]
+        self.full_x_data = self.full_x_data[1:]
+        self.full_y_data = self.full_y_data[1:]
         #  update plot data
+        self.setTime(self.num_segs)
+        print(len(self.x_data))
         self.plot.set_xdata(self.x_data)
         self.plot.set_ydata(self.y_data)
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
