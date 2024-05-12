@@ -2,7 +2,7 @@ import os
 import re
 import config
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import sqlite3
 import tkinter as tk
 from file_read_backwards import FileReadBackwards
@@ -47,31 +47,31 @@ class AntiDOSWeb:
     def extraerIpsHoras(self):
         ips_horas = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
-        registros = self.leerRegistros()
-        matches = re.findall(patron, registros)
-
         ips_desbanedas = self.obtenerIpsDesbaneadas()
+        with FileReadBackwards(self.log_path, encoding="utf-8") as log:
+            for l in log:
+                matches = re.findall(patron, l)
+                if len(matches) > 0:
+                    match = matches[0]
+                    ip = match[0]
+                    fecha_ultimo_baneo = 0
+                    hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
 
-        for match in matches:
-            #self.lineas_leidas += 1
-            ip = match[0]
-            hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
-
-            fecha_ultimo_baneo = 0
-            if ip in self.ips_baneadas:
-                fecha_ultimo_baneo = self.ips_baneadas[ip]["last_ban"]
-
-            if not (ip in ips_desbanedas and hora <= fecha_ultimo_baneo):
-                if ip in ips_horas:
-                    if hora in ips_horas[ip]:
-                        ips_horas[ip][hora] += 1
+                    if hora < (datetime.now() + timedelta(seconds=-10)).timestamp():
+                        break
                     else:
-                        ips_horas[ip][hora] = 1
-                else:
-                    ips_horas[ip] = {hora: 1}
+                        if ip in self.ips_baneadas:
+                            fecha_ultimo_baneo = self.ips_baneadas[ip]["last_ban"]
 
-        self.ips_horas = ips_horas
-
+                        if not (ip in ips_desbanedas and hora <= fecha_ultimo_baneo):
+                            if ip in ips_horas:
+                                if hora in ips_horas[ip]:
+                                    ips_horas[ip][hora] += 1
+                                else:
+                                    ips_horas[ip][hora] = 1
+                            else:
+                                ips_horas[ip] = {hora: 1}
+            self.ips_horas = ips_horas
 
     def extraerHorasActividad(self, tiempo=0):
         horas_actividad = {}
