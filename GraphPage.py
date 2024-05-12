@@ -5,7 +5,6 @@ from matplotlib.figure import Figure
 from datetime import datetime, timedelta
 from random import randint
 import matplotlib.dates as mdates
-import AntiDOSWeb
 import seaborn as sns
 
 

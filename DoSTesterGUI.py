@@ -1,5 +1,4 @@
 import time
-import tkinter as tk
 import ttkbootstrap as ttk
 from tkinter.scrolledtext import ScrolledText
 import sys, signal
@@ -13,7 +12,6 @@ import customtkinter
 import subprocess
 
 tiempo_grafica = 60
-graph = None
 timer = None
 min = 20
 max = 120
@@ -42,9 +40,9 @@ def centrarVentana(ventana):
 def verificarContenido(campo_entrada,boton_submit):
 	input = campo_entrada.get()
 	if input:
-		boton_submit.config(state=tk.NORMAL)
+		boton_submit.config(state=ttk.NORMAL)
 	else:
-		boton_submit.config(state=tk.DISABLED)
+		boton_submit.config(state=ttk.DISABLED)
 
 ########################CREACIÓN VENTANA PRINCIPAL########################
 def crearVentanaPrincipal():
@@ -52,7 +50,7 @@ def crearVentanaPrincipal():
 
 	root = ttk.Window(themename="superhero")
 	root.title("DoS Tester GUI")
-	imagen_icono = tk.PhotoImage(file="images/kaki.png")
+	imagen_icono = ttk.PhotoImage(file="images/kaki.png")
 	root.iconphoto(True, imagen_icono)
 	label_titulo = ttk.Label(root, text="DoS Tester", font="Helvetica 30 bold", style='info.TLabel', foreground='#247ca5')
 	label_titulo.place(relx=0.5, y=30, anchor="center")
@@ -267,7 +265,7 @@ def putsTelegramItems(muestraAviso=True):
 	input_telegram.place(relx=0.5, y=160, anchor="center")
 
 
-	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=tk.DISABLED, command=lambda: seleccionarTelegramUser(muestraAviso), style='success.TButton')
+	boton_submit_telegram = ttk.Button(root, text="Enviar", width=15, state=ttk.DISABLED, command=lambda: seleccionarTelegramUser(muestraAviso), style='success.TButton')
 	boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
 
 	label_pedir_telegram = ttk.Label(root, text="Por favor, introduzca el usuario de telegram:\n (Debes enviar /start al bot para que funcione)", font="Helvetica 12 bold", style='info.TLabel')
@@ -276,7 +274,7 @@ def putsTelegramItems(muestraAviso=True):
 ######################## AVISOS ########################
 
 def putAviso():
-	ventana_aviso = tk.Toplevel()
+	ventana_aviso = ttk.Toplevel()
 	ventana_aviso.title("Aviso")
 	ventana_aviso.geometry("450x150")
 
@@ -290,7 +288,7 @@ def putAviso():
 
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-	global max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+	global max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
 
 	root.attributes('-zoomed', True)
 
@@ -299,7 +297,7 @@ def putMonitorItems():
 
 	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
-	graph_thread = actualizarGrafica(60)
+	crearHebraGrafica()
 
 	root.style.configure('success.TButton', font=('Helvetica', 20))
 	root.style.configure('warning.TButton', font=('Helvetica', 20))
@@ -307,10 +305,10 @@ def putMonitorItems():
 	root.style.configure('info.TButton', font=('Helvetica', 16))
 	root.style.configure('TMenubutton', font=('Helvetica', 16))
 
-	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=threading, style='success.TButton')
+	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=crearHebraMonitor, style='success.TButton')
 	boton_monitor.place(relx=0.12, y=200, anchor="center")
 
-	boton_parar_monitor = ttk.Button(root, text="Parar monitorización", width=25, command=terminarMonitor,state=tk.DISABLED, style='warning.TButton')
+	boton_parar_monitor = ttk.Button(root, text="Parar monitorización", width=25, command=terminarMonitor,state=ttk.DISABLED, style='warning.TButton')
 	boton_parar_monitor.place(relx=0.12, y=280, anchor="center")
 
 	boton_cerrar = ttk.Button(root, text="Cerrar programa", width=25, command=funcionSalir, style='danger.TButton')
@@ -323,11 +321,11 @@ def putMonitorItems():
 	boton_modificar_parametro.place(relx=0.12, y=875, anchor="center")
 
 	menu_botones = ttk.Menubutton(root, text='Seleccione el parámetro', style='info.Outline.TMenubutton')
-	menu = tk.Menu(menu_botones)
+	menu = ttk.Menu(menu_botones)
 	menu_botones.config(width=25)
 	menu_botones.pack(fill="x", padx=10, pady=10)
 
-	opciones_parametros = tk.StringVar()
+	opciones_parametros = ttk.StringVar()
 	opciones_parametros.trace_add('write', lambda *args: seleccionarParametro())
 	for option in ["Server", "Config_path", "Log_path", "Ban_path", "Database_name", "Telegram_user","Todos"]:
 		menu.add_radiobutton(label=option, value=option, variable=opciones_parametros)
@@ -340,37 +338,34 @@ def putMonitorItems():
 							 foreground='#247ca5')
 	slider_label.place(relx=0.35, y=725, anchor="center")
 
-	#slider = tk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
+	#slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
 	slider = customtkinter.CTkSlider(master=root, from_=min, to=max, width=500, command=cambioSlider, number_of_steps=max-min)
 	slider.place(relx=0.6, y=725, anchor="center")
 
 
 def cambioSlider(value):
-	global timer, root, slider_label, tiempo_grafica
+	global timer, root, slider_label
 	if timer is not None:
 		root.after_cancel(timer)
 	timer = root.after(250, lambda:actualizarGrafica(value))
 	slider_label.config(text=f"Número de segundos a mostrar: {int(value)}")
 
-
 def actualizarGrafica(tiempo):
-	global graph, graph_thread, max, min
+	global graph
 	tiempo = int(tiempo)
-
 	if graph:
 		graph.setTime(tiempo)
-	
-	if not graph_thread and not graph:
-		graph_thread = Thread(target=animateGraph)
-		graph_thread.start()
-		
-	return graph_thread
 
-def animateGraph():
-	global graph, anti_dos, root, tiempo_grafica, max, min, animar
+def crearHebraGrafica():
+	global graph
 	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
 	graph.setTime(tiempo_grafica)
 	graph.place(relx=0.6, y=370, anchor="center")
+	graph_thread = Thread(target=animateGraph)
+	graph_thread.start()	
+
+def animateGraph():
+	global graph, animar
 	animar = True
 	while animar:
 		graph.animate()
@@ -383,28 +378,27 @@ def seleccionarParametro():
 	parametro_elegido = opciones_parametros.get()
 	menu_botones.config(text=parametro_elegido)
 
-
 def actualizarScrolledTest(texto):
 	scrolled_text_baneos.config(state='normal')
-	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
+	scrolled_text_baneos.insert(ttk.END, texto, "mi_color")
 	scrolled_text_baneos.config(state='disabled')
 
-def threading():
+def crearHebraMonitor():
     monitor_thread=Thread(target=comenzarMonitor)
     monitor_thread.start()
 
 def comenzarMonitor():
 	scrolled_text_baneos.tag_config("mi_color", foreground="#0dc526", font=("Helvetica", 12, "bold"))
 	actualizarScrolledTest("[+] Monitorizando...\n")
-	boton_monitor.config(state=tk.DISABLED)
-	boton_parar_monitor.config(state=tk.NORMAL)
+	boton_monitor.config(state=ttk.DISABLED)
+	boton_parar_monitor.config(state=ttk.NORMAL)
 	anti_dos.monitor()
 
 def terminarMonitor():
 	scrolled_text_baneos.tag_config("mi_color", foreground="orange", font=("Helvetica", 12, "bold"))
 	actualizarScrolledTest("\n[!] Monitorización detenida\n\n")
-	boton_parar_monitor.config(state=tk.DISABLED)
-	boton_monitor.config(state=tk.NORMAL)
+	boton_parar_monitor.config(state=ttk.DISABLED)
+	boton_monitor.config(state=ttk.NORMAL)
 	anti_dos.terminarMonitor()
 
 def funcionSalir():
