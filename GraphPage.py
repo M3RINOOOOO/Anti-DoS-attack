@@ -101,5 +101,4 @@ class GraphPage(tk.Frame):
 
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
         self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data) * 1.1))
-
         self.canvas.draw_idle()  # redraw plot
