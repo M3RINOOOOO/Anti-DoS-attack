@@ -31,12 +31,12 @@ graph_thread = None
 
 #Llamar siempre después de un resize
 def centrarVentana(ventana):
-    ventana.update_idletasks()
-    ancho_ventana = ventana.winfo_width()
-    altura_ventana = ventana.winfo_height()
-    x_cordinate = int((ventana.winfo_screenwidth() / 2) - (ancho_ventana / 2))
-    y_cordinate = int((ventana.winfo_screenheight() / 2) - (altura_ventana / 2))
-    ventana.geometry("+{}+{}".format(x_cordinate, y_cordinate))
+	ventana.update_idletasks()
+	ancho_ventana = ventana.winfo_width()
+	altura_ventana = ventana.winfo_height()
+	x_cordinate = int((ventana.winfo_screenwidth() / 2) - (ancho_ventana / 2))
+	y_cordinate = int((ventana.winfo_screenheight() / 2) - (altura_ventana / 2))
+	ventana.geometry("+{}+{}".format(x_cordinate, y_cordinate))
 
 def verificarContenido(campo_entrada,boton_submit):
 	input = campo_entrada.get()
@@ -449,7 +449,7 @@ def modificarParametro():
 	elif parametro == "Telegram_user":
 		putsTelegramItems(False)
 
-########################MAIN########################
+######################## MAIN ########################
 
 if __name__ == "__main__":
 
