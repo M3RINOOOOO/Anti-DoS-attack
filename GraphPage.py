@@ -11,7 +11,7 @@ import seaborn as sns
 class GraphPage(tk.Frame):
 
     def __init__(self, parent, num_segs, anti_dos):
-
+        self.num_segs = num_segs
         sns.set_style("whitegrid")
         blue, = sns.color_palette("muted", 1)
 
@@ -32,7 +32,8 @@ class GraphPage(tk.Frame):
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-num_segs)
         self.x_data = [dateTimeObj + timedelta(seconds=i) for i in range(num_segs)]
-        self.y_data = [self.nuevoElemento(int(self.x_data[i].timestamp())) for i in range(num_segs)]
+        self.y_data = [0 for i in range(num_segs)]
+        #self.y_data = [self.nuevoElemento(int(self.x_data[i].timestamp())) for i in range(num_segs)]
 
         # create the plot
         self.plot = self.ax.plot(self.x_data, self.y_data, color=blue, label='Peticiones')[0]
@@ -54,10 +55,34 @@ class GraphPage(tk.Frame):
     def nuevoElemento(self, tiempo):
         horas_actividad = self.anti_dos.extraerHorasActividad()
         elemento = 0
+        tiempo = int(tiempo)
         if tiempo-1 in horas_actividad:
             elemento = horas_actividad[tiempo-1]
 
         return elemento
+
+
+    def setTime(self, tiempo):
+        if tiempo < self.num_segs:
+            print("quiere menos tiempo")
+            self.x_data = self.x_data[len(self.x_data)-tiempo:]
+            self.y_data = self.y_data[len(self.y_data)-tiempo:]
+        elif tiempo > self.num_segs:
+            print("quiere mas tiempo")
+            quedan = tiempo - self.num_segs
+            x_principio = []
+            y_principio = []
+            for i in range(quedan, 0, -1):
+                print(i)
+                x_principio.append(self.x_data[0] + timedelta(seconds=-i))
+                y_principio.append(self.nuevoElemento(x_principio[-1].timestamp()))
+
+            self.x_data = x_principio + self.x_data
+            print(len(self.x_data))
+            self.y_data = y_principio + self.y_data
+            print(len(self.y_data))
+
+        self.num_segs = tiempo
 
     def animate(self):
         # append new data point to the x and y data
