@@ -34,7 +34,9 @@ class GraphPage(tk.Frame):
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
         self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
-        self.full_y_data = [self.nuevoElemento(int(self.full_x_data[i].timestamp())) for i in range(max_segs)]
+        print("a")
+        self.full_y_data = self.extraerNumPeticiones(self.full_x_data)
+        print("b")
 
         self.setTime(num_segs)
 
@@ -51,6 +53,22 @@ class GraphPage(tk.Frame):
         self.canvas = FigureCanvasTkAgg(self.figure, self)
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
         self.animate()
+
+
+    #[self.nuevoElemento(int(self.full_x_data[i].timestamp())) for i in range(max_segs)]
+    def extraerNumPeticiones(self, x_valores):
+        horas_actividad = self.anti_dos.extraerHorasActividad()
+        y_valores = []
+        peticiones = 0
+        for t in x_valores:
+            peticiones = 0
+            tiempo = int(t.timestamp())
+            if tiempo - 1 in horas_actividad:
+                peticiones = horas_actividad[tiempo-1]
+
+            y_valores.append(peticiones)
+
+        return y_valores
 
     def nuevoElemento(self, tiempo):
         horas_actividad = self.anti_dos.extraerHorasActividad()
