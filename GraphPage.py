@@ -64,16 +64,13 @@ class GraphPage(tk.Frame):
 
     def setTime(self, tiempo):
         if tiempo < self.num_segs:
-            print("quiere menos tiempo")
             self.x_data = self.x_data[len(self.x_data)-tiempo:]
             self.y_data = self.y_data[len(self.y_data)-tiempo:]
         elif tiempo > self.num_segs:
-            print("quiere mas tiempo")
             quedan = tiempo - self.num_segs
             x_principio = []
             y_principio = []
             for i in range(quedan, 0, -1):
-                print(i)
                 x_principio.append(self.x_data[0] + timedelta(seconds=-i))
                 y_principio.append(self.nuevoElemento(x_principio[-1].timestamp()))
 
