@@ -292,7 +292,6 @@ def putMonitorItems():
 
 	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
-	print("EJECUTANDO ESTO")
 	graph_thread = actualizarGrafica(60)
 
 	root.style.configure('success.TButton', font=('Helvetica', 20))
@@ -352,16 +351,15 @@ def cambioSlider(value):
 def actualizarGrafica(tiempo):
 	global graph, graph_thread
 	tiempo = int(tiempo)
-	print(tiempo)
 
 	if not graph:
 		graph = GraphPage.GraphPage(root, tiempo, anti_dos)
 	else:
-		print("SETTINGS TIME: " + str(tiempo))
 		graph.setTime(tiempo)
-	graph.place(relx=0.6, y=370, anchor="center")
+
 	if not graph_thread:
-		graph_thread = threading_graph()
+		graph_thread = Thread(target=animateGraph)
+		graph_thread.start()
 	return graph_thread
 
 
@@ -378,17 +376,6 @@ def actualizarScrolledTest(texto):
 	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
 	scrolled_text_baneos.config(state='disabled')
 
-def	threading_graph():
-	global graph_thread
-
-	if graph_thread:
-		print("PARANDO")
-		graph_thread.stop()
-
-	if not graph_thread:
-		graph_thread = Thread(target=animateGraph)
-	graph_thread.start()
-	return graph_thread
 
 def animateGraph():
 	global graph, anti_dos, root, tiempo_grafica
