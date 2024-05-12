@@ -10,6 +10,7 @@ import GraphPage
 from dotenv import load_dotenv, set_key
 import os
 import customtkinter
+import subprocess
 
 tiempo_grafica = 60
 graph = None
@@ -70,6 +71,7 @@ def seleccionarServidor(servidor,go_to_monitor=False):
 
 	if go_to_monitor:
 		putMonitorItems()
+		subprocess.call(["./setup.sh"])
 	else:
 		putConfigItems()
 
@@ -102,6 +104,7 @@ def seleccionarRutaConfig(go_to_monitor=False):
 
 	if go_to_monitor:
 		putMonitorItems()
+		subprocess.call(["./setup.sh"])
 	else:
 		putLogsItems()
 
@@ -139,6 +142,7 @@ def seleccionarRutaLogs(go_to_monitor=False):
 
 	if go_to_monitor:
 		putMonitorItems()
+		subprocess.call(["./setup.sh"])
 	else:
 		putBansItems()
 
@@ -176,6 +180,7 @@ def seleccionarRutaBans(go_to_monitor=False):
 
 	if go_to_monitor:
 		putMonitorItems()
+		subprocess.call(["./setup.sh"])
 	else:
 		putsDatabaseItems()
 
@@ -213,6 +218,7 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 
 	if go_to_monitor:
 		putMonitorItems()
+		subprocess.call(["./setup.sh"])
 	else:
 		putsTelegramItems()
 
@@ -239,6 +245,7 @@ def seleccionarTelegramUser(muestraAviso=True):
 
 	telegram_username = input_telegram.get()
 	set_key(".env", "TELEGRAM_USER", telegram_username)
+	subprocess.call(["./setup.sh"])
 
 	input_telegram.destroy()
 	boton_submit_telegram.destroy()
@@ -350,20 +357,24 @@ def actualizarGrafica(tiempo):
 	global graph, graph_thread, max, min
 	tiempo = int(tiempo)
 
-	# if not graph:
-	# 	print("CREANDO GRAPH")
-	# 	graph = GraphPage.GraphPage(root, tiempo, anti_dos, max-min)
-	# 	print("TERMINADO CREANDO GRAPH")
-	# else:
-	# 	graph.setTime(tiempo)
 	if graph:
 		graph.setTime(tiempo)
-
+	
 	if not graph_thread and not graph:
 		graph_thread = Thread(target=animateGraph)
 		graph_thread.start()
+		
 	return graph_thread
 
+def animateGraph():
+	global graph, anti_dos, root, tiempo_grafica, max, min, animar
+	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
+	graph.setTime(tiempo_grafica)
+	graph.place(relx=0.6, y=370, anchor="center")
+	animar = True
+	while animar:
+		graph.animate()
+		time.sleep(1)
 
 def seleccionarParametro():
 	"""
@@ -377,18 +388,6 @@ def actualizarScrolledTest(texto):
 	scrolled_text_baneos.config(state='normal')
 	scrolled_text_baneos.insert(tk.END, texto, "mi_color")
 	scrolled_text_baneos.config(state='disabled')
-
-
-def animateGraph():
-	global graph, anti_dos, root, tiempo_grafica, max, min, animar
-	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
-	graph.setTime(tiempo_grafica)
-	graph.place(relx=0.6, y=370, anchor="center")
-	animar = True
-	while animar:
-		graph.animate()
-		time.sleep(1)
-
 
 def threading():
     monitor_thread=Thread(target=comenzarMonitor)

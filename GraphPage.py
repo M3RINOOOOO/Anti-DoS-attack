@@ -34,9 +34,7 @@ class GraphPage(tk.Frame):
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
         self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
-        print("a")
         self.full_y_data = self.extraerNumPeticiones(self.full_x_data)
-        print("b")
 
         self.setTime(num_segs)
 
@@ -103,5 +101,4 @@ class GraphPage(tk.Frame):
 
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
         self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data) * 1.1))
-
         self.canvas.draw_idle()  # redraw plot
