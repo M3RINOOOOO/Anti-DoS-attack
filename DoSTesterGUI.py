@@ -16,6 +16,8 @@ from pypot.utils import StoppableThread
 tiempo_grafica = 60
 graph = None
 timer = None
+min = 20
+max = 120
 
 
 def defHandler(sig, frame):
@@ -283,7 +285,7 @@ def putAviso():
 
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-	global graph_thread, slider_label, root, anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+	global max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, graph, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
 
 	root.attributes('-zoomed', True)
 
@@ -334,14 +336,12 @@ def putMonitorItems():
 	slider_label.place(relx=0.35, y=725, anchor="center")
 
 	#slider = tk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
-	min = 20
-	max = 120
-	slider = customtkinter.CTkSlider(master=root, from_=min, to=max, width=500, command=cambioSlider, number_of_steps=max - min)
+	slider = customtkinter.CTkSlider(master=root, from_=min, to=max, width=500, command=cambioSlider, number_of_steps=max-min)
 	slider.place(relx=0.6, y=725, anchor="center")
 
 
 def cambioSlider(value):
-	global timer, root, slider_label
+	global timer, root, slider_label, tiempo_grafica
 	if timer is not None:
 		root.after_cancel(timer)
 	timer = root.after(250, lambda:actualizarGrafica(value))
@@ -349,15 +349,19 @@ def cambioSlider(value):
 
 
 def actualizarGrafica(tiempo):
-	global graph, graph_thread
+	global graph, graph_thread, max, min
 	tiempo = int(tiempo)
 
-	if not graph:
-		graph = GraphPage.GraphPage(root, tiempo, anti_dos)
-	else:
+	# if not graph:
+	# 	print("CREANDO GRAPH")
+	# 	graph = GraphPage.GraphPage(root, tiempo, anti_dos, max-min)
+	# 	print("TERMINADO CREANDO GRAPH")
+	# else:
+	# 	graph.setTime(tiempo)
+	if graph:
 		graph.setTime(tiempo)
 
-	if not graph_thread:
+	if not graph_thread and not graph:
 		graph_thread = Thread(target=animateGraph)
 		graph_thread.start()
 	return graph_thread
@@ -378,16 +382,14 @@ def actualizarScrolledTest(texto):
 
 
 def animateGraph():
-	global graph, anti_dos, root, tiempo_grafica
-	if tiempo_grafica:
-		tiempo_grafica = int(tiempo_grafica)
-	else:
-		tiempo_grafica = 60
-	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos)
+	global graph, anti_dos, root, tiempo_grafica, max, min
+	graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
+	graph.setTime(tiempo_grafica)
 	graph.place(relx=0.6, y=370, anchor="center")
 	while True:
 		graph.animate()
 		time.sleep(1)
+
 
 def threading():
     monitor_thread=Thread(target=comenzarMonitor)
