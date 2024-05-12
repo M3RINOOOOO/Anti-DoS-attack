@@ -454,6 +454,12 @@ def modificarParametro():
 		putsTelegramItems(False)
 
 ######################## MAIN ########################
+def on_closing():
+	global animar
+	animar = False
+	terminarMonitor()
+	print("\n\n[!] Saliendo...\n")
+	sys.exit(1)
 
 if __name__ == "__main__":
 
@@ -468,6 +474,7 @@ if __name__ == "__main__":
 		telegram_username = os.getenv("TELEGRAM_USER")
 
 	crearVentanaPrincipal()
+	root.protocol("WM_DELETE_WINDOW", on_closing)
 
 	if first_time:
 		putServerItems()
