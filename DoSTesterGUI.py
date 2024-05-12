@@ -15,6 +15,7 @@ tiempo_grafica = 60
 timer = None
 min = 20
 max = 120
+kaki = None
 
 
 def defHandler(sig, frame):
@@ -111,6 +112,7 @@ def putConfigItems(go_to_monitor=False):
 
 	root.geometry("600x300")
 	centrarVentana(root)
+
 
 	if main_server=="apache":
 		combo_box_config = ttk.Combobox(root, style="TCombobox", values=config.APACHE_CONFIG_PATH,width=50)
@@ -286,9 +288,55 @@ def putAviso():
 
 	centrarVentana(ventana_aviso)
 
+
+def mostrarVentanaMonitor():
+	global root, splash_root
+	root.deiconify()
+	splash_root.destroy()
+
+
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-	global max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+	global kaki, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+
+	# Esconde la ventana del monitor
+	root.withdraw()
+
+	kaki = ttk.PhotoImage(file="images/kaki.png")
+	kaki = kaki.subsample(3)
+
+	splash_root = ttk.Toplevel()
+	splash_root.withdraw()
+
+	splash_label = ttk.Label(splash_root, text="Cargando...", font="Helvetica 30 bold", style='info.TLabel',
+							 background='#247ca5')
+	splash_label.pack(pady=20)
+
+	# Agregar la imagen debajo del título
+	image_label = ttk.Label(splash_root, image=kaki)
+	image_label.pack(pady=40)
+
+	progress_bar = ttk.Progressbar(splash_root, orient="horizontal", length=300, mode="determinate")
+	progress_bar.pack(pady=10)
+
+	splash_root.wm_attributes('-type', 'splash')
+	splash_root.title("Pantalla de carga")
+	splash_root.geometry("400x500")
+	splash_root.config(background="#247ca5")
+	splash_root.resizable(False, False)
+
+
+
+	# Centrar la ventana
+	splash_root.deiconify()
+	centrarVentana(splash_root)
+
+	for i in range(1, 101):
+		progress_bar["value"] = i
+		splash_root.update_idletasks()
+		time.sleep(0.03)
+
+	splash_root.after(0, mostrarVentanaMonitor)
 
 	root.attributes('-zoomed', True)
 
@@ -305,6 +353,7 @@ def putMonitorItems():
 	root.style.configure('info.TButton', font=('Helvetica', 16))
 	root.style.configure('TMenubutton', font=('Helvetica', 16))
 
+	print("llega")
 	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=crearHebraMonitor, style='success.TButton')
 	boton_monitor.place(relx=0.12, y=200, anchor="center")
 
@@ -455,6 +504,7 @@ def on_closing():
 	sys.exit(1)
 
 if __name__ == "__main__":
+	global root
 
 	if os.path.isfile('.env'):
 		first_time = False
@@ -471,7 +521,7 @@ if __name__ == "__main__":
 
 	if first_time:
 		putServerItems()
-	else :
+	else:
 		putMonitorItems()
 
 	root.mainloop()
