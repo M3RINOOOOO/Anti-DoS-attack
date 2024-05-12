@@ -10,8 +10,6 @@ import GraphPage
 from dotenv import load_dotenv, set_key
 import os
 import customtkinter
-import multiprocessing
-from pypot.utils import StoppableThread
 
 tiempo_grafica = 60
 graph = None
@@ -415,7 +413,7 @@ def funcionSalir():
 	sys.exit(1)
 
 def modificarParametro():
-
+	global graph, graph_thread
 	parametro = opciones_parametros.get()
 
 	if parametro:
@@ -432,6 +430,9 @@ def modificarParametro():
 		root.style.configure('warning.TButton', font=('Helvetica', 12))
 		root.style.configure('danger.TButton', font=('Helvetica', 12))
 		root.style.configure('info.TButton', font=('Helvetica', 12))
+
+	graph_thread = None
+	graph = None
 
 	if parametro == "Todos":
 		putServerItems()
