@@ -32,14 +32,23 @@ class GraphPage(tk.Frame):
 
         # initial x and y data
         dateTimeObj = datetime.now() + timedelta(seconds=-max_segs)
-        self.full_x_data = [dateTimeObj + timedelta(seconds=i) for i in range(max_segs)]
+        self.full_x_data = [
+            dateTimeObj + timedelta(seconds=i) for i in range(max_segs)
+        ]
         self.full_y_data = self.extraerNumPeticiones(self.full_x_data)
 
         self.setTime(num_segs)
 
         # create the plot
-        self.plot = self.ax.plot(self.x_data, self.y_data, color=self.blue, label='Peticiones')[0]
-        self.fill_between = self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3, color=self.blue)
+        self.plot = self.ax.plot(self.x_data,
+                                 self.y_data,
+                                 color=self.blue,
+                                 label='Peticiones')[0]
+        self.fill_between = self.ax.fill_between(self.x_data,
+                                                 0,
+                                                 self.y_data,
+                                                 alpha=.3,
+                                                 color=self.blue)
 
         self.ax.set_ylim(0, 10)
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
@@ -48,9 +57,10 @@ class GraphPage(tk.Frame):
         self.ax.set_facecolor('#C5DECD')
 
         self.canvas = FigureCanvasTkAgg(self.figure, self)
-        self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        self.canvas.get_tk_widget().pack(side=tk.BOTTOM,
+                                         fill=tk.BOTH,
+                                         expand=True)
         self.animate()
-
 
     #[self.nuevoElemento(int(self.full_x_data[i].timestamp())) for i in range(max_segs)]
     def extraerNumPeticiones(self, x_valores):
@@ -61,7 +71,7 @@ class GraphPage(tk.Frame):
             peticiones = 0
             tiempo = int(t.timestamp())
             if tiempo - 1 in horas_actividad:
-                peticiones = horas_actividad[tiempo-1]
+                peticiones = horas_actividad[tiempo - 1]
 
             y_valores.append(peticiones)
 
@@ -96,8 +106,13 @@ class GraphPage(tk.Frame):
         self.plot.set_xdata(self.x_data)
         self.plot.set_ydata(self.y_data)
         self.fill_between.remove()
-        self.fill_between = self.ax.fill_between(self.x_data, 0, self.y_data, alpha=.3, color=self.blue)
+        self.fill_between = self.ax.fill_between(self.x_data,
+                                                 0,
+                                                 self.y_data,
+                                                 alpha=.3,
+                                                 color=self.blue)
 
         self.ax.set_xlim(self.x_data[0], self.x_data[-1])
-        self.ax.set_ylim(0, 10 if (max(self.y_data) < 10) else int(max(self.y_data) * 1.1))
+        self.ax.set_ylim(
+            0, 10 if (max(self.y_data) < 10) else int(max(self.y_data) * 1.1))
         self.canvas.draw_idle()  # redraw plot

@@ -7,9 +7,18 @@ import sqlite3
 import tkinter as tk
 from file_read_backwards import FileReadBackwards
 
+
 class AntiDOSWeb:
-########################################  CONSTRUCTOR   ########################################
-    def __init__(self, server, config_path, log_path, ban_path, formato_fecha, sqlite_path, telegram_user, scroll_gui=False):
+    ########################################  CONSTRUCTOR   ########################################
+    def __init__(self,
+                 server,
+                 config_path,
+                 log_path,
+                 ban_path,
+                 formato_fecha,
+                 sqlite_path,
+                 telegram_user,
+                 scroll_gui=False):
         self.server = server
         self.config_path = config_path
         self.log_path = log_path
@@ -18,12 +27,13 @@ class AntiDOSWeb:
         self.sqlite_path = sqlite_path
         self.telegram_user = telegram_user
         self.scroll_gui = scroll_gui
-        self.ult_mod = os.stat(log_path).st_mtime        
+        self.ult_mod = os.stat(log_path).st_mtime
         self.ips_horas = {}
         self.inicializarBaseDatos()
         self.lineas_leidas = 0
 
 ######################################## GESTIÓN DE LOGS   ########################################
+
     def leerRegistros(self):
         try:
             with open(self.log_path, "r") as log:
@@ -43,7 +53,7 @@ class AntiDOSWeb:
             return registros
         except Exception as e:
             return f"Error al leer los registros: {e}"
-        
+
     def extraerIpsHoras(self):
         ips_horas = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
@@ -55,15 +65,19 @@ class AntiDOSWeb:
                     match = matches[0]
                     ip = match[0]
                     fecha_ultimo_baneo = 0
-                    hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
+                    hora = datetime.strptime(match[1],
+                                             self.formato_fecha).timestamp()
 
-                    if hora < (datetime.now() + timedelta(seconds=-10)).timestamp():
+                    if hora < (datetime.now() +
+                               timedelta(seconds=-10)).timestamp():
                         break
                     else:
                         if ip in self.ips_baneadas:
-                            fecha_ultimo_baneo = self.ips_baneadas[ip]["last_ban"]
+                            fecha_ultimo_baneo = self.ips_baneadas[ip][
+                                "last_ban"]
 
-                        if not (ip in ips_desbanedas and hora <= fecha_ultimo_baneo):
+                        if not (ip in ips_desbanedas
+                                and hora <= fecha_ultimo_baneo):
                             if ip in ips_horas:
                                 if hora in ips_horas[ip]:
                                     ips_horas[ip][hora] += 1
@@ -82,9 +96,10 @@ class AntiDOSWeb:
                 matches = re.findall(patron, l)
                 if len(matches) > 0:
                     match = matches[0]
-                    hora = datetime.strptime(match[1], self.formato_fecha).timestamp()
+                    hora = datetime.strptime(match[1],
+                                             self.formato_fecha).timestamp()
 
-                    if hora < tiempo-10:
+                    if hora < tiempo - 10:
                         break
                     else:
                         codigo = int(match[2])
@@ -96,7 +111,8 @@ class AntiDOSWeb:
 
         return horas_actividad
 
-######################################## GESTIÓN DE BASE DE DATOS   ########################################    
+######################################## GESTIÓN DE BASE DE DATOS   ########################################
+
     def inicializarBaseDatos(self):
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
@@ -117,27 +133,35 @@ class AntiDOSWeb:
         ips_baneadas = cursor.fetchall()
         ip_baneada = {}
         for ip, last_ban, n_bans, is_banned in ips_baneadas:
-            ip_baneada[ip] = {'last_ban': last_ban, 'n_bans': n_bans, "is_banned": is_banned}
+            ip_baneada[ip] = {
+                'last_ban': last_ban,
+                'n_bans': n_bans,
+                "is_banned": is_banned
+            }
         return ip_baneada
 
     def actualizarBaseDatos(self, ip, ban):
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
-        cursor.execute("SELECT n_bans FROM ips WHERE ip = ?", (ip,))
+        cursor.execute("SELECT n_bans FROM ips WHERE ip = ?", (ip, ))
         n_bans = cursor.fetchone()
 
         if ban:
             if n_bans:
                 n_bans = n_bans[0] + 1
-                cursor.execute("UPDATE ips SET last_ban = ?, n_bans = ?, is_banned = 1 WHERE ip = ?", (datetime.now().timestamp(), n_bans, ip))
+                cursor.execute(
+                    "UPDATE ips SET last_ban = ?, n_bans = ?, is_banned = 1 WHERE ip = ?",
+                    (datetime.now().timestamp(), n_bans, ip))
             else:
-                cursor.execute("INSERT INTO ips (ip, last_ban, n_bans, is_banned) VALUES (?, ?, ?, 1)", (ip, datetime.now().timestamp(), 1))
+                cursor.execute(
+                    "INSERT INTO ips (ip, last_ban, n_bans, is_banned) VALUES (?, ?, ?, 1)",
+                    (ip, datetime.now().timestamp(), 1))
         else:
-            cursor.execute("UPDATE ips SET is_banned = 0 WHERE ip = ?", (ip,)) 
-            
+            cursor.execute("UPDATE ips SET is_banned = 0 WHERE ip = ?", (ip, ))
+
         conexion.commit()
         conexion.close()
-        
+
         self.ips_baneadas = self.obtenerBaseDatos()
 
     def obtenerIpsDesbaneadas(self):
@@ -153,20 +177,21 @@ class AntiDOSWeb:
 
         return ips_desbaneadas
 
-
 ######################################## GESTIÓN DE BANEOS   ########################################
 
     def banearIp(self, ip):
         try:
             with open(self.ban_path, "a") as ban_file:
-                esta_baneado = (ip in self.ips_baneadas) and (self.ips_baneadas[ip]["is_banned"])
-            
-                if (f"Deny from {ip}" not in open(self.ban_path).read()) and not esta_baneado: 
+                esta_baneado = (ip in self.ips_baneadas) and (
+                    self.ips_baneadas[ip]["is_banned"])
 
-                    if(self.server == "apache"):
+                if (f"Deny from {ip}" not in open(
+                        self.ban_path).read()) and not esta_baneado:
+
+                    if (self.server == "apache"):
                         ban_file.write(f"Deny from {ip}\n")
 
-                    elif(self.server == "nginx"):
+                    elif (self.server == "nginx"):
 
                         with open(self.ban_path, "r") as ban_file:
                             lineas = ban_file.readlines()
@@ -181,24 +206,31 @@ class AntiDOSWeb:
 
                     self.enviarAvisoPorTelegram(ip)
 
-                    self.actualizarBaseDatos(ip,True)
+                    self.actualizarBaseDatos(ip, True)
 
                     hora_actual = datetime.now()
-                    hora_formateada = hora_actual.strftime("%d/%b/%Y:%H:%M:%S %z")
+                    hora_formateada = hora_actual.strftime(
+                        "%d/%b/%Y:%H:%M:%S %z")
 
                     if self.scroll_gui:
                         self.scroll_gui.config(state='normal')
-                        self.scroll_gui.insert(tk.END, f"[{hora_formateada}] La IP {ip} ha sido baneada\n", "mi_color")
+                        self.scroll_gui.insert(
+                            tk.END,
+                            f"[{hora_formateada}] La IP {ip} ha sido baneada\n",
+                            "mi_color")
                         self.scroll_gui.config(state='disabled')
                     else:
-                        print(f"[{hora_formateada}] La IP {ip} ha sido baneada")
+                        print(
+                            f"[{hora_formateada}] La IP {ip} ha sido baneada")
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
 
     def enviarAvisoPorTelegram(self, ip):
-        requests.get(f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}")
+        requests.get(
+            f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}"
+        )
 
     def desbanearIp(self, ip):
         try:
@@ -215,12 +247,14 @@ class AntiDOSWeb:
                             ban_file.write(linea)
             if self.server == "nginx":
                 os.system("sudo nginx -s reload")
-                    
+
             return f"La IP {ip} ha sido desbaneada"
         except Exception as e:
             return f"Error al desbanear la IP {ip}: {e}"
 
+
 ######################################## MONITORIZACIÓN   ########################################
+
     def checkDos(self):
         for ip, horas in self.ips_horas.items():
 
@@ -230,15 +264,21 @@ class AntiDOSWeb:
 
     def checkDisBan(self):
         for ip in self.ips_baneadas:
-            tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] - 1) * config.TIEMPO_BANEO
-            if self.ips_baneadas[ip]["last_ban"] + tiempo_baneado <= datetime.now().timestamp() and (self.ips_baneadas[ip]["is_banned"]):
-                
+            tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] -
+                                 1) * config.TIEMPO_BANEO
+            if self.ips_baneadas[ip][
+                    "last_ban"] + tiempo_baneado <= datetime.now().timestamp(
+                    ) and (self.ips_baneadas[ip]["is_banned"]):
+
                 hora_actual = datetime.now()
                 hora_formateada = hora_actual.strftime("%d/%b/%Y:%H:%M:%S %z")
-                
+
                 if self.scroll_gui:
                     self.scroll_gui.config(state='normal')
-                    self.scroll_gui.insert(tk.END, f"[{hora_formateada}] La IP {ip} ha sido desbaneada\n", "mi_color")
+                    self.scroll_gui.insert(
+                        tk.END,
+                        f"[{hora_formateada}] La IP {ip} ha sido desbaneada\n",
+                        "mi_color")
                     self.scroll_gui.config(state='disabled')
                 else:
                     print(f"[{hora_formateada}] La IP {ip} ha sido desbaneada")
@@ -254,7 +294,6 @@ class AntiDOSWeb:
                 self.ult_mod = ult_mod_actual
                 self.extraerIpsHoras()
                 self.checkDos()
-                
-    
+
     def terminarMonitor(self):
         self.monitorizar = False

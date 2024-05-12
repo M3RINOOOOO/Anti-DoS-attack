@@ -1,7 +1,5 @@
 # Archivo de configuracion
 
-
-
 # Variables globales por defecto
 ################## RUTA PARA ENVIAR LOS MENSAJES DESDE EL BOT DE TELEGRAM ##################
 URL_ENVIAR_MENSAJE = "https://anti-dos-cbc627e45bd1.herokuapp.com/enviarMensaje/"
@@ -13,11 +11,11 @@ WEB_SERVER_PATH = "/var/www/html/"
 SERVERS = ["nginx", "apache"]
 
 ################## APACHE ##################
-APACHE_LOG_PATHS = ["/var/log/apache2/access.log",
-                    "/var/log/apache/access.log",
-                    "/var/log/httpd/access.log",
-                    "/var/log/httpd/access_log",
-                    "/var/log/httpd-access.log"]
+APACHE_LOG_PATHS = [
+    "/var/log/apache2/access.log", "/var/log/apache/access.log",
+    "/var/log/httpd/access.log", "/var/log/httpd/access_log",
+    "/var/log/httpd-access.log"
+]
 APACHE_BAN_PATH = [WEB_SERVER_PATH + ".htaccess"]
 APACHE_CONFIG_PATH = ["/etc/apache2/apache2.conf"]
 
@@ -40,5 +38,3 @@ MAX_REQUESTS_PER_MIN = 200
 
 ################## Tiempo de baneo ##################
 TIEMPO_BANEO = 3
-
-
