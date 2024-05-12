@@ -47,8 +47,8 @@ def verificarContenido(campo_entrada,boton_submit):
 ########################CREACIÓN VENTANA PRINCIPAL########################
 def crearVentanaPrincipal():
 	global root
-
 	root = ttk.Window(themename="superhero")
+	root.protocol("WM_DELETE_WINDOW", on_closing)
 	root.title("DoS Tester GUI")
 	imagen_icono = ttk.PhotoImage(file="images/kaki.png")
 	root.iconphoto(True, imagen_icono)
@@ -288,12 +288,12 @@ def putAviso():
 
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-	global max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+	global max, min, graph_thread, slider_label, slider, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
 
 	root.attributes('-zoomed', True)
 
 	scrolled_text_baneos = ScrolledText(root, width=172,  height=10, state='disabled')
-	scrolled_text_baneos.place(relx=0.6, y=870, anchor="center")
+	scrolled_text_baneos.place(relx=0.6, rely=0.87, anchor="center")
 
 	anti_dos = AntiDOSWeb.AntiDOSWeb(main_server, main_config_path, main_log_path, main_ban_path, "%d/%b/%Y:%H:%M:%S %z", data_base_name, telegram_username, scrolled_text_baneos)
 
@@ -306,19 +306,19 @@ def putMonitorItems():
 	root.style.configure('TMenubutton', font=('Helvetica', 16))
 
 	boton_monitor = ttk.Button(root, text="Empezar monitorización", width=25, command=crearHebraMonitor, style='success.TButton')
-	boton_monitor.place(relx=0.12, y=200, anchor="center")
+	boton_monitor.place(relx=0.12, rely=0.2, anchor="center")
 
 	boton_parar_monitor = ttk.Button(root, text="Parar monitorización", width=25, command=terminarMonitor,state=ttk.DISABLED, style='warning.TButton')
-	boton_parar_monitor.place(relx=0.12, y=280, anchor="center")
+	boton_parar_monitor.place(relx=0.12, rely=0.28, anchor="center")
 
 	boton_cerrar = ttk.Button(root, text="Cerrar programa", width=25, command=funcionSalir, style='danger.TButton')
-	boton_cerrar.place(relx=0.12, y=360, anchor="center")
+	boton_cerrar.place(relx=0.12, rely=0.36, anchor="center")
 
 	label_modificar_parametro = ttk.Label(root, text="Modificación de parámetros", font="Helvetica 22 bold", style='info.TLabel', foreground='#247ca5')
-	label_modificar_parametro.place(relx=0.12, y=775, anchor="center")
+	label_modificar_parametro.place(relx=0.12, rely=0.775, anchor="center")
 
 	boton_modificar_parametro = ttk.Button(root, text="Modificar", width=15, command=modificarParametro, style='info.Outline.TButton')
-	boton_modificar_parametro.place(relx=0.12, y=875, anchor="center")
+	boton_modificar_parametro.place(relx=0.12, rely=0.875, anchor="center")
 
 	menu_botones = ttk.Menubutton(root, text='Seleccione el parámetro', style='info.Outline.TMenubutton')
 	menu = ttk.Menu(menu_botones)
@@ -331,16 +331,16 @@ def putMonitorItems():
 		menu.add_radiobutton(label=option, value=option, variable=opciones_parametros)
 
 	menu_botones['menu'] = menu
-	menu_botones.place(relx=0.12, y=825, anchor="center")
+	menu_botones.place(relx=0.12, rely=0.825, anchor="center")
 
 	# Slider para controlar el numero de segundos a mostrar en la grafica
 	slider_label = ttk.Label(root, text="Número de segundos a mostrar: 60", font="Helvetica 14 bold", style='info.TLabel',
 							 foreground='#247ca5')
-	slider_label.place(relx=0.35, y=725, anchor="center")
+	slider_label.place(relx=0.35, rely=0.725, anchor="center")
 
 	#slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
 	slider = customtkinter.CTkSlider(master=root, from_=min, to=max, width=500, command=cambioSlider, number_of_steps=max-min)
-	slider.place(relx=0.6, y=725, anchor="center")
+	slider.place(relx=0.6, rely=0.725, anchor="center")
 
 
 def cambioSlider(value):
@@ -423,6 +423,9 @@ def modificarParametro():
 		label_modificar_parametro.destroy()
 		boton_modificar_parametro.destroy()
 		menu_botones.destroy()
+		scrolled_text_baneos.master.destroy()
+		slider_label.destroy()
+		slider.destroy()
 		root.style.configure('success.TButton', font=('Helvetica', 12))
 		root.style.configure('warning.TButton', font=('Helvetica', 12))
 		root.style.configure('danger.TButton', font=('Helvetica', 12))
@@ -450,7 +453,7 @@ def modificarParametro():
 def on_closing():
 	global animar
 	animar = False
-	terminarMonitor()
+	anti_dos.terminarMonitor()
 	print("\n\n[!] Saliendo...\n")
 	sys.exit(1)
 
@@ -467,7 +470,6 @@ if __name__ == "__main__":
 		telegram_username = os.getenv("TELEGRAM_USER")
 
 	crearVentanaPrincipal()
-	root.protocol("WM_DELETE_WINDOW", on_closing)
 
 	if first_time:
 		putServerItems()
