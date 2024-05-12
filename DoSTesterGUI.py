@@ -354,7 +354,11 @@ def actualizarGrafica(tiempo):
 	tiempo = int(tiempo)
 	print(tiempo)
 
-	graph = GraphPage.GraphPage(root, tiempo, anti_dos)
+	if not graph:
+		graph = GraphPage.GraphPage(root, tiempo, anti_dos)
+	else:
+		print("SETTINGS TIME: " + str(tiempo))
+		graph.setTime(tiempo)
 	graph.place(relx=0.6, y=370, anchor="center")
 	if not graph_thread:
 		graph_thread = threading_graph()
