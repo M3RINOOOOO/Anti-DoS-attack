@@ -217,12 +217,12 @@ class AntiDOSWeb:
                         self.scroll_gui.config(state='normal')
                         self.scroll_gui.insert(
                             tk.END,
-                            f"[{hora_formateada}] La IP {ip} ha sido baneada\n",
+                            f"[ {hora_formateada}] La IP {ip} ha sido baneada\n",
                             "mi_color")
                         self.scroll_gui.config(state='disabled')
                     else:
                         print(
-                            f"[{hora_formateada}] La IP {ip} ha sido baneada")
+                            f"[ {hora_formateada}] La IP {ip} ha sido baneada")
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
@@ -278,11 +278,11 @@ class AntiDOSWeb:
                     self.scroll_gui.config(state='normal')
                     self.scroll_gui.insert(
                         tk.END,
-                        f"[{hora_formateada}] La IP {ip} ha sido desbaneada\n",
+                        f"[ {hora_formateada}] La IP {ip} ha sido desbaneada\n",
                         "mi_color")
                     self.scroll_gui.config(state='disabled')
                 else:
-                    print(f"[{hora_formateada}] La IP {ip} ha sido desbaneada")
+                    print(f"[ {hora_formateada}] La IP {ip} ha sido desbaneada")
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
 
