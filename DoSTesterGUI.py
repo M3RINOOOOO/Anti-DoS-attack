@@ -56,7 +56,7 @@ def verificarContenido(campo_entrada, boton_submit):
 
 ########################CREACIÓN VENTANA PRINCIPAL########################
 def crearVentanaPrincipal():
-    global root
+    global root, label_titulo
     root = ttk.Window(themename="superhero")
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.title("DoS Tester GUI")
@@ -92,8 +92,10 @@ def seleccionarServidor(servidor, go_to_monitor=False):
 
 def putServerItems(go_to_monitor=False):
     global label_servidor, boton_apache, boton_nginx
-
+    
+    root.resizable(True, True)
     root.geometry("400x180")
+    label_titulo.place(relx=0.5, y=30, anchor="center")
     centrarVentana(root)
 
     label_servidor = ttk.Label(
@@ -142,6 +144,8 @@ def seleccionarRutaConfig(go_to_monitor=False):
 def putConfigItems(go_to_monitor=False):
     global combo_box_config, boton_submit_config, label_pedir_config
 
+    label_titulo.place(relx=0.5, y=30, anchor="center")
+    root.resizable(True, True)
     root.geometry("600x300")
     centrarVentana(root)
 
@@ -199,6 +203,8 @@ def seleccionarRutaLogs(go_to_monitor=False):
 def putLogsItems(go_to_monitor=False):
     global combo_box_logs, boton_submit_logs, label_pedir_logs
 
+    label_titulo.place(relx=0.5, y=30, anchor="center")
+    root.resizable(True, True)
     root.geometry("600x300")
     centrarVentana(root)
 
@@ -256,6 +262,8 @@ def seleccionarRutaBans(go_to_monitor=False):
 def putBansItems(go_to_monitor=False):
     global combo_box_bans, boton_submit_bans, label_pedir_bans
 
+    label_titulo.place(relx=0.5, y=30, anchor="center")
+    root.resizable(True, True)
     root.geometry("600x300")
     centrarVentana(root)
 
@@ -313,6 +321,8 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 def putsDatabaseItems(go_to_monitor=False):
     global combo_box_database, boton_submit_database, label_pedir_database
 
+    label_titulo.place(relx=0.5, y=30, anchor="center")
+    root.resizable(True, True)
     root.geometry("600x300")
     centrarVentana(root)
 
@@ -361,7 +371,9 @@ def seleccionarTelegramUser(muestraAviso=True):
 
 def putsTelegramItems(muestraAviso=True):
     global input_telegram, boton_submit_telegram, label_pedir_telegram
-
+    
+    label_titulo.place(relx=0.5, y=30, anchor="center")
+    root.resizable(True, True)
     root.geometry("600x300")
     centrarVentana(root)
 
@@ -432,7 +444,7 @@ def cambiarColor():
 
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
-    global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
+    global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos, boton_cambiar_color 
 
     # Esconde la ventana del monitor
     root.withdraw()
@@ -478,6 +490,8 @@ def putMonitorItems():
     splash_root.after(0, mostrarVentanaMonitor)
 
     root.attributes('-zoomed', True)
+    label_titulo.place(relx=0.5, rely=0.025, anchor="center")
+    root.resizable(False, False)
     scrolled_text_baneos = ScrolledText(root,
                                         width=int((root.winfo_screenwidth() / 11.15)),
                                         height=(root.winfo_screenheight() // 100),
@@ -675,6 +689,7 @@ def modificarParametro():
         scrolled_text_baneos.master.destroy()
         slider_label.destroy()
         slider.destroy()
+        boton_cambiar_color.destroy()
         root.style.configure('success.TButton', font=('Helvetica', 12))
         root.style.configure('warning.TButton', font=('Helvetica', 12))
         root.style.configure('danger.TButton', font=('Helvetica', 12))
