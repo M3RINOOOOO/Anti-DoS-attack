@@ -51,9 +51,9 @@ def centrarVentana(ventana):
 def verificarContenido(campo_entrada, boton_submit):
     input = campo_entrada.get()
     if input:
-        boton_submit.config(state=ttk.NORMAL)
+        boton_submit.config(text="Enviar", style='success.TButton', state=ttk.NORMAL)
     else:
-        boton_submit.config(state=ttk.DISABLED)
+        boton_submit.config(text="Saltar", style='danger.TButton', state=ttk.NORMAL)
 
 
 ########################CREACIÓN VENTANA PRINCIPAL########################
@@ -87,7 +87,8 @@ def seleccionarServidor(servidor, go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+        dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
     else:
         putConfigItems()
 
@@ -138,7 +139,8 @@ def seleccionarRutaConfig(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+        dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
     else:
         putLogsItems()
 
@@ -197,7 +199,8 @@ def seleccionarRutaLogs(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+        dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
     else:
         putBansItems()
 
@@ -256,7 +259,8 @@ def seleccionarRutaBans(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+        dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
     else:
         putsDatabaseItems()
 
@@ -315,7 +319,8 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+        dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
     else:
         putsTelegramItems()
 
@@ -359,7 +364,8 @@ def seleccionarTelegramUser(muestraAviso=True):
 
     telegram_username = input_telegram.get()
     set_key(".env", "TELEGRAM_USER", telegram_username)
-    subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
+    dir_actual = subprocess.getoutput("/usr/bin/pwd")
+    subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
 
     input_telegram.destroy()
     boton_submit_telegram.destroy()
@@ -387,11 +393,11 @@ def putsTelegramItems(muestraAviso=True):
 
     boton_submit_telegram = ttk.Button(
         root,
-        text="Enviar",
+        text="Saltar",
         width=15,
-        state=ttk.DISABLED,
+        state=ttk.NORMAL,
         command=lambda: seleccionarTelegramUser(muestraAviso),
-        style='success.TButton')
+        style='danger.TButton')
     boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
 
     label_pedir_telegram = ttk.Label(
@@ -409,7 +415,7 @@ def putsTelegramItems(muestraAviso=True):
 def putAviso():
     ventana_aviso = ttk.Toplevel()
     ventana_aviso.title("Aviso")
-    ventana_aviso.geometry("450x150")
+    ventana_aviso.geometry("450x180")
 
     label_aviso = ttk.Label(
         ventana_aviso,
@@ -730,7 +736,6 @@ if __name__ == "__main__":
     global root
 
     if os.path.isfile('.env'):
-        first_time = False
         load_dotenv()
         main_server = os.getenv("SERVER")
         main_config_path = os.getenv("CONFIG_PATH")
@@ -738,6 +743,12 @@ if __name__ == "__main__":
         main_ban_path = os.getenv("BAN_PATH")
         data_base_name = os.getenv("DATABASE_FILE")
         telegram_username = os.getenv("TELEGRAM_USER")
+
+        if main_server and main_config_path and main_log_path and main_ban_path:
+            dir_actual = subprocess.getoutput("/usr/bin/pwd")
+            subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+
+        first_time = not main_server or not main_config_path or not main_log_path or not main_ban_path or not data_base_name or not telegram_username
 
     crearVentanaPrincipal()
 
