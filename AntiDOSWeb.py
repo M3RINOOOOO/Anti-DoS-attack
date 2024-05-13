@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import sqlite3
 import tkinter as tk
 from file_read_backwards import FileReadBackwards
+from termcolor import colored
 
 
 class AntiDOSWeb:
@@ -182,17 +183,18 @@ class AntiDOSWeb:
 
     def banearIp(self, ip):
         try:
+            print(self.ban_path)
             with open(self.ban_path, "a") as ban_file:
-                esta_baneado = (ip in self.ips_baneadas) and (
-                    self.ips_baneadas[ip]["is_banned"])
-
+                esta_baneado = (ip in self.ips_baneadas) and (self.ips_baneadas[ip]["is_banned"])
+                print("TE INTENTO BANEAR TONTITO")
                 if (f"Deny from {ip}" not in open(
                         self.ban_path).read()) and not esta_baneado:
 
-                    if (self.server == "APACHE"):
+                    if self.server == "APACHE":
                         ban_file.write(f"Deny from {ip}\n")
+                        print("TE INTENTO BANEAR TONTITO")
 
-                    elif (self.server == "NGINX"):
+                    elif self.server == "NGINX":
 
                         with open(self.ban_path, "r") as ban_file:
                             lineas = ban_file.readlines()
@@ -221,17 +223,18 @@ class AntiDOSWeb:
                             "mi_color")
                         self.scroll_gui.config(state='disabled')
                     else:
-                        print(
-                            f"[ {hora_formateada}] La IP {ip} ha sido baneada")
+                        print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido", colored("baneada", "red"))
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
+            print("ERROR!!!!!")
             return f"Error al banear la IP {ip}: {e}"
 
     def enviarAvisoPorTelegram(self, ip):
-        requests.get(
-            f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}"
-        )
+        if self.telegram_user:
+            requests.get(
+                f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}"
+            )
 
     def desbanearIp(self, ip):
         try:
@@ -282,7 +285,7 @@ class AntiDOSWeb:
                         "mi_color")
                     self.scroll_gui.config(state='disabled')
                 else:
-                    print(f"[ {hora_formateada}] La IP {ip} ha sido desbaneada")
+                    print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido", colored("desbaneada", "green"))
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
 
