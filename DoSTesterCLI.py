@@ -52,7 +52,7 @@ def main():
             print(f"[-] SERVER: {server}")
             set_key(".env", "SERVER", server)
 
-            if config.SERVERS[indice] == "apache":
+            if config.SERVERS[indice] == "APACHE":
                 ## PEDIR ARCHIVO DE LOGS
                 menu = TerminalMenu(
                     config.APACHE_LOG_PATHS + ["Ruta personalizada"],

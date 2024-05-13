@@ -189,10 +189,10 @@ class AntiDOSWeb:
                 if (f"Deny from {ip}" not in open(
                         self.ban_path).read()) and not esta_baneado:
 
-                    if (self.server == "apache"):
+                    if (self.server == "APACHE"):
                         ban_file.write(f"Deny from {ip}\n")
 
-                    elif (self.server == "nginx"):
+                    elif (self.server == "NGINX"):
 
                         with open(self.ban_path, "r") as ban_file:
                             lineas = ban_file.readlines()
@@ -240,13 +240,13 @@ class AntiDOSWeb:
 
             with open(self.ban_path, "w") as ban_file:
                 for linea in lineas:
-                    if self.server == "apache":
+                    if self.server == "APACHE":
                         if f"Deny from {ip}" not in linea:
                             ban_file.write(linea)
-                    elif self.server == "nginx":
+                    elif self.server == "NGINX":
                         if f"deny {ip};" not in linea:
                             ban_file.write(linea)
-            if self.server == "nginx":
+            if self.server == "NGINX":
                 os.system("sudo nginx -s reload")
 
             return f"La IP {ip} ha sido desbaneada"

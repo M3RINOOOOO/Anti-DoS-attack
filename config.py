@@ -8,7 +8,7 @@ URL_ENVIAR_MENSAJE = "https://anti-dos-cbc627e45bd1.herokuapp.com/enviarMensaje/
 WEB_SERVER_PATH = "/var/www/html/"
 
 ################## SERVIDORES DISPONIBLES ##################
-SERVERS = ["nginx", "apache"]
+SERVERS = ["NGINX", "APACHE"]
 
 ################## APACHE ##################
 APACHE_LOG_PATHS = [
@@ -25,7 +25,7 @@ NGINX_BAN_PATH = ["/etc/nginx/sites-available/default"]
 NGINX_CONFIG_PATH = ["/etc/nginx/sites-available/default"]
 
 ################## MAIN ##################
-MAIN_SERVER = "apache"
+MAIN_SERVER = "APACHE"
 MAIN_CONFIG_PATH = APACHE_CONFIG_PATH
 MAIN_LOG_PATH = APACHE_LOG_PATHS[0]
 MAIN_BAN_PATH = APACHE_BAN_PATH
