@@ -2,6 +2,9 @@ import time
 import ttkbootstrap as ttk
 from tkinter.scrolledtext import ScrolledText
 import sys, signal
+
+import ttkbootstrap.dialogs.colorchooser
+
 import config
 import AntiDOSWeb
 from threading import *
@@ -16,6 +19,7 @@ timer = None
 min = 20
 max = 120
 kaki = None
+colors = None
 
 
 def defHandler(sig, frame):
@@ -417,6 +421,16 @@ def mostrarVentanaMonitor():
     splash_root.destroy()
 
 
+def cambiarColor():
+    global colors, graph
+    ventana = ttkbootstrap.dialogs.colorchooser.ColorChooserDialog()
+    ventana.show()
+    colors = ventana.result
+    graph.cambiarColor(colors.hex)
+    print(colors.hex)
+
+
+
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
     global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos
@@ -551,6 +565,11 @@ def putMonitorItems():
                              foreground='#247ca5')
     slider_label.place(relx=0.35, rely=0.725, anchor="center")
 
+
+    # Boton para cambiar el color de la grafica
+    boton_cambiar_color = ttk.Button(root, text="Cambiar color", command=cambiarColor)
+    boton_cambiar_color.place(relx=0.85, rely=0.725, anchor="center")
+
     #slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
     slider = customtkinter.CTkSlider(master=root,
                                      from_=min,
@@ -577,8 +596,9 @@ def actualizarGrafica(tiempo):
 
 
 def crearHebraGrafica():
-    global graph
-    graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max)
+    global graph, colors
+    color = colors.hex if colors else None
+    graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max, color=color)
     graph.setTime(tiempo_grafica)
     graph.place(relx=0.6, y=370, anchor="center")
     graph_thread = Thread(target=animateGraph)
