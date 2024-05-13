@@ -31,6 +31,7 @@ class AntiDOSWeb:
         self.ips_horas = {}
         self.inicializarBaseDatos()
         self.lineas_leidas = 0
+        self.extraerIpsHoras()
 
 ######################################## GESTIÓN DE LOGS   ########################################
 
@@ -290,9 +291,10 @@ class AntiDOSWeb:
         while self.monitorizar:
             self.checkDisBan()
             ult_mod_actual = os.stat(self.log_path).st_mtime
+            self.extraerIpsHoras()
+                
             if ult_mod_actual != self.ult_mod:
                 self.ult_mod = ult_mod_actual
-                self.extraerIpsHoras()
                 self.checkDos()
 
     def terminarMonitor(self):

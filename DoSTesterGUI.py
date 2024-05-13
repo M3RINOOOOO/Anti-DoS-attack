@@ -107,14 +107,14 @@ def putServerItems(go_to_monitor=False):
         root,
         text="Apache",
         width=15,
-        command=lambda: seleccionarServidor("apache", go_to_monitor))
+        command=lambda: seleccionarServidor("APACHE", go_to_monitor))
     boton_apache.place(relx=0.3, y=130, anchor="center")
 
     boton_nginx = ttk.Button(
         root,
         text="Nginx",
         width=15,
-        command=lambda: seleccionarServidor("nginx", go_to_monitor),
+        command=lambda: seleccionarServidor("NGINX", go_to_monitor),
         style='warning.TButton')
     boton_nginx.place(relx=0.7, y=130, anchor="center")
 
@@ -145,12 +145,12 @@ def putConfigItems(go_to_monitor=False):
     root.geometry("600x300")
     centrarVentana(root)
 
-    if main_server == "apache":
+    if main_server == "APACHE":
         combo_box_config = ttk.Combobox(root,
                                         style="TCombobox",
                                         values=config.APACHE_CONFIG_PATH,
                                         width=50)
-    elif main_server == "nginx":
+    elif main_server == "NGINX":
         combo_box_config = ttk.Combobox(root,
                                         style="TCombobox",
                                         values=config.NGINX_CONFIG_PATH,
@@ -202,12 +202,12 @@ def putLogsItems(go_to_monitor=False):
     root.geometry("600x300")
     centrarVentana(root)
 
-    if main_server == "apache":
+    if main_server == "APACHE":
         combo_box_logs = ttk.Combobox(root,
                                       style="TCombobox",
                                       values=config.APACHE_LOG_PATHS,
                                       width=50)
-    elif main_server == "nginx":
+    elif main_server == "NGINX":
         combo_box_logs = ttk.Combobox(root,
                                       style="TCombobox",
                                       values=config.NGINX_LOG_PATHS,
@@ -259,12 +259,12 @@ def putBansItems(go_to_monitor=False):
     root.geometry("600x300")
     centrarVentana(root)
 
-    if main_server == "apache":
+    if main_server == "APACHE":
         combo_box_bans = ttk.Combobox(root,
                                       style="TCombobox",
                                       values=config.APACHE_BAN_PATH,
                                       width=50)
-    elif main_server == "nginx":
+    elif main_server == "NGINX":
         combo_box_bans = ttk.Combobox(root,
                                       style="TCombobox",
                                       values=config.NGINX_BAN_PATH,
@@ -427,7 +427,6 @@ def cambiarColor():
     ventana.show()
     colors = ventana.result
     graph.cambiarColor(colors.hex)
-    print(colors.hex)
 
 
 
@@ -499,7 +498,6 @@ def putMonitorItems():
     root.style.configure('info.TButton', font=('Helvetica', 16))
     root.style.configure('TMenubutton', font=('Helvetica', 16))
 
-    print("llega")
     boton_monitor = ttk.Button(root,
                                text="Empezar monitorización",
                                width=25,
@@ -567,7 +565,7 @@ def putMonitorItems():
 
 
     # Boton para cambiar el color de la grafica
-    boton_cambiar_color = ttk.Button(root, text="Cambiar color", command=cambiarColor)
+    boton_cambiar_color = ttk.Button(root, text="Cambiar color de gráfica", command=cambiarColor)
     boton_cambiar_color.place(relx=0.85, rely=0.725, anchor="center")
 
     #slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
