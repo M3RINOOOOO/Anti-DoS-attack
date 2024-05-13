@@ -15,6 +15,9 @@
 #	- Dar permisos de lectura y escritura
 # ERROR_PATH
 #	- Para NGINX, se necesita que el archivo /var/log/nginx/error.log tenga permisos de lectura y escritura (o el archivo equivalente)
+
+cd "$(/usr/bin/dirname "$0")"
+
 while IFS= read -r line || [[ -n "$line" ]]; do
   export "$line"
 done < .env

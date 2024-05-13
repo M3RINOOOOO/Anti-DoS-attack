@@ -20,7 +20,7 @@ min = 20
 max = 120
 kaki = None
 colors = None
-
+anti_dos = None
 
 def defHandler(sig, frame):
     print("\n\n[!] Saliendo forzadamente...\n")
@@ -85,7 +85,7 @@ def seleccionarServidor(servidor, go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["./setup.sh"])
+        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
     else:
         putConfigItems()
 
@@ -136,7 +136,7 @@ def seleccionarRutaConfig(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["./setup.sh"])
+        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
     else:
         putLogsItems()
 
@@ -195,7 +195,7 @@ def seleccionarRutaLogs(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["./setup.sh"])
+        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
     else:
         putBansItems()
 
@@ -254,7 +254,7 @@ def seleccionarRutaBans(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["./setup.sh"])
+        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
     else:
         putsDatabaseItems()
 
@@ -313,7 +313,7 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        subprocess.call(["./setup.sh"])
+        subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
     else:
         putsTelegramItems()
 
@@ -357,7 +357,7 @@ def seleccionarTelegramUser(muestraAviso=True):
 
     telegram_username = input_telegram.get()
     set_key(".env", "TELEGRAM_USER", telegram_username)
-    subprocess.call(["./setup.sh"])
+    subprocess.call(["/usr/bin/pkexec", "./setup.sh"])
 
     input_telegram.destroy()
     boton_submit_telegram.destroy()
@@ -718,7 +718,8 @@ def modificarParametro():
 def on_closing():
     global animar
     animar = False
-    anti_dos.terminarMonitor()
+    if anti_dos is not None:
+        anti_dos.terminarMonitor()
     print("\n\n[!] Saliendo...\n")
     sys.exit(1)
 
