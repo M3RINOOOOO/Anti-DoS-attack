@@ -20,7 +20,7 @@ class GraphPage(tk.Frame):
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)
         # matplotlib figure
-        self.figure = Figure(figsize=(14, 6), dpi=100)
+        self.figure = Figure(figsize=(int((parent.winfo_screenwidth() / 135)), int((parent.winfo_screenheight() / 175))), dpi=100)
         self.figure.set_facecolor('#2CB57E')
         self.figure.suptitle("Peticiones recibidas por segundo", fontsize=16)
         self.ax = self.figure.add_subplot(111)

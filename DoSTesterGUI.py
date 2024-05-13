@@ -478,10 +478,9 @@ def putMonitorItems():
     splash_root.after(0, mostrarVentanaMonitor)
 
     root.attributes('-zoomed', True)
-
     scrolled_text_baneos = ScrolledText(root,
-                                        width=172,
-                                        height=10,
+                                        width=int((root.winfo_screenwidth() / 11.15)),
+                                        height=(root.winfo_screenheight() // 100),
                                         state='disabled')
     scrolled_text_baneos.place(relx=0.6, rely=0.87, anchor="center")
 
@@ -500,14 +499,14 @@ def putMonitorItems():
 
     boton_monitor = ttk.Button(root,
                                text="Empezar monitorización",
-                               width=25,
+                               width=int((root.winfo_screenwidth() / 80)),
                                command=crearHebraMonitor,
                                style='success.TButton')
     boton_monitor.place(relx=0.12, rely=0.2, anchor="center")
 
     boton_parar_monitor = ttk.Button(root,
                                      text="Parar monitorización",
-                                     width=25,
+                                     width=int((root.winfo_screenwidth() / 80)),
                                      command=terminarMonitor,
                                      state=ttk.DISABLED,
                                      style='warning.TButton')
@@ -515,7 +514,7 @@ def putMonitorItems():
 
     boton_cerrar = ttk.Button(root,
                               text="Cerrar programa",
-                              width=25,
+                              width=int((root.winfo_screenwidth() / 80)),
                               command=funcionSalir,
                               style='danger.TButton')
     boton_cerrar.place(relx=0.12, rely=0.36, anchor="center")
@@ -529,7 +528,7 @@ def putMonitorItems():
 
     boton_modificar_parametro = ttk.Button(root,
                                            text="Modificar",
-                                           width=15,
+                                           width=int((root.winfo_screenwidth() / 95)),
                                            command=modificarParametro,
                                            style='info.Outline.TButton')
     boton_modificar_parametro.place(relx=0.12, rely=0.875, anchor="center")
@@ -538,7 +537,7 @@ def putMonitorItems():
                                   text='Seleccione el parámetro',
                                   style='info.Outline.TMenubutton')
     menu = ttk.Menu(menu_botones)
-    menu_botones.config(width=25)
+    menu_botones.config(width=int((root.winfo_screenwidth() / 80)))
     menu_botones.pack(fill="x", padx=10, pady=10)
 
     opciones_parametros = ttk.StringVar()
@@ -565,14 +564,14 @@ def putMonitorItems():
 
 
     # Boton para cambiar el color de la grafica
-    boton_cambiar_color = ttk.Button(root, text="Cambiar color de gráfica", command=cambiarColor)
+    boton_cambiar_color = ttk.Button(root, text="Cambiar color de gráfica", command=cambiarColor, width=int((root.winfo_screenwidth() / 80)))
     boton_cambiar_color.place(relx=0.85, rely=0.725, anchor="center")
 
     #slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")
     slider = customtkinter.CTkSlider(master=root,
                                      from_=min,
                                      to=max,
-                                     width=500,
+                                     width=int((root.winfo_screenwidth() / 4)),
                                      command=cambioSlider,
                                      number_of_steps=max - min)
     slider.place(relx=0.6, rely=0.725, anchor="center")
@@ -598,7 +597,7 @@ def crearHebraGrafica():
     color = colors.hex if colors else None
     graph = GraphPage.GraphPage(root, tiempo_grafica, anti_dos, max, color=color)
     graph.setTime(tiempo_grafica)
-    graph.place(relx=0.6, y=370, anchor="center")
+    graph.place(relx=0.6, rely=0.38, anchor="center")
     graph_thread = Thread(target=animateGraph)
     graph_thread.start()
 
