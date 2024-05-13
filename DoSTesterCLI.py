@@ -1,3 +1,5 @@
+import subprocess
+from termcolor import colored
 import AntiDOSWeb
 import config
 import sys, signal
@@ -27,6 +29,7 @@ def banner():
     print("    @M3RINOOOOO")
     print("    @manbolq")
     print("-- KakiTeam --")
+    print()
 
 
 def parseArgs():
@@ -88,7 +91,7 @@ def main():
                 ## PEDIR ARCHIVO DE BANS
 
                 menu = TerminalMenu(
-                    [config.APACHE_BAN_PATH, "Ruta personalizada"],
+                    config.APACHE_BAN_PATH + ["Ruta personalizada"],
                     title=
                     "[+] Selecciona el archivo de baneos de Apache\n[*] Debe ser el archivo .htaccess de la ruta principal del servidor"
                 )
@@ -98,7 +101,7 @@ def main():
                     ban_path = input(
                         "Introduce la ruta del archivo de baneos: ")
                 else:
-                    ban_path = config.APACHE_BAN_PATH
+                    ban_path = config.APACHE_BAN_PATH[indice]
 
                 print(f"[-] Archivo de baneos: {ban_path}")
                 set_key(".env", "BAN_PATH", ban_path)
@@ -106,7 +109,7 @@ def main():
                 ## PEDIR ARCHIVO DE CONFIGURACION
 
                 menu = TerminalMenu(
-                    [config.APACHE_CONFIG_PATH, "Ruta personalizada"],
+                    config.APACHE_CONFIG_PATH + ["Ruta personalizada"],
                     title=
                     "[+] Selecciona el archivo de configuración de Apache\n[*] Suele estar en la ruta:"
                 )
@@ -116,7 +119,7 @@ def main():
                     config_path = input(
                         "Introduce la ruta del archivo de configuración: ")
                 else:
-                    config_path = config.APACHE_CONFIG_PATH
+                    config_path = config.APACHE_CONFIG_PATH[indice]
 
                 print(f"[-] Archivo de configuración: {config_path}")
                 set_key(".env", "CONFIG_PATH", config_path)
@@ -137,7 +140,7 @@ def main():
 
                 print(f"[-] Archivo de logs: {log_path}")
                 set_key(".env", "LOG_PATH", log_path)
-
+                print("OAISNOIASFN")
                 ## PEDIR ARCHIVO DE BANS
 
                 menu = TerminalMenu(
@@ -196,14 +199,16 @@ def main():
                 print(f"[-] Usuario de Telegram: {telegram_user}")
                 set_key(".env", "TELEGRAM_USER", telegram_user)
 
+            subprocess.call(["./setup.sh"])
             anti_dos = AntiDOSWeb.AntiDOSWeb(server, config_path, log_path,
                                              ban_path, "%d/%b/%Y:%H:%M:%S %z",
                                              database_file, telegram_user)
-            print("\n[+] Monitorizando...")
+            print("\n[+] Monitorizando...\n")
             anti_dos.monitor()
 
         except Exception as e:
-            print("\n[!] Saliendo...")
+            print(e)
+            print("\n[!] Ha ocurrido un error\n[!] Saliendo...")
             sys.exit(1)
     else:
         server = args.server.lower() if args.server else os.getenv("SERVER")
@@ -249,18 +254,22 @@ def main():
         if telegram_user:
             set_key(".env", "TELEGRAM_USER", telegram_user)
 
+        if args.server or args.ban_path or args.log_path or args.config_path:
+            subprocess.call(["./setup.sh"])
+
         if faltan_args_obligatorios:
             print("\n[!] ATENCION")
             print(
-                "[!] os argumentos SERVER, BAN_PATH, LOG_PATH y CONFIG_PATH son obligatorios. Asegúrate de asignarles un valor"
+                "[!] Los argumentos SERVER, BAN_PATH, LOG_PATH y CONFIG_PATH son obligatorios. Asegúrate de asignarles un valor"
             )
+            print("[!] Sugerencia: usa la opción --help")
             print("[!] Saliendo...")
             sys.exit(1)
 
         anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, config_path,
                                          ban_path, "%d/%b/%Y:%H:%M:%S %z",
                                          database_file, telegram_user)
-        print("\n[+] Monitorizando...")
+        print("\n[+] Monitorizando...\n")
         anti_dos.monitor()
 
 
