@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 from termcolor import colored
 import AntiDOSWeb
@@ -275,6 +277,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    # anti_dos = AntiDOSWeb.AntiDOSWeb(config.MAIN_SERVER, config.MAIN_LOG_PATH, config.MAIN_BAN_PATH, "%d/%b/%Y:%H:%M:%S %z", "ip_bans.db", config.TELEGRAM_USERNAME)
-    # anti_dos.monitor()

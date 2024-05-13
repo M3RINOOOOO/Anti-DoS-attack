@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import ttkbootstrap as ttk
 from tkinter.scrolledtext import ScrolledText
