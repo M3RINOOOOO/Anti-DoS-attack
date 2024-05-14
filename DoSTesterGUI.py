@@ -129,7 +129,9 @@ def putServerItems(go_to_monitor=False):
 
 
 def seleccionarRutaConfig(go_to_monitor=False):
-    global main_config_path
+    global main_config_path, root
+
+    root.unbind("<Return>")
 
     main_config_path = combo_box_config.get()
     set_key(".env", "CONFIG_PATH", main_config_path)
@@ -185,12 +187,16 @@ def putConfigItems(go_to_monitor=False):
         style='info.TLabel')
     label_pedir_config.place(relx=0.5, y=100, anchor="center")
 
+    root.bind("<Return>", lambda event: seleccionarRutaConfig(go_to_monitor))
+
 
 ########################SELECCIÓN RUTA LOGS########################
 
 
 def seleccionarRutaLogs(go_to_monitor=False):
-    global main_log_path
+    global main_log_path, root
+
+    root.unbind("<Return>")
 
     main_log_path = combo_box_logs.get()
     set_key(".env", "LOG_PATH", main_log_path)
@@ -246,12 +252,16 @@ def putLogsItems(go_to_monitor=False):
         style='info.TLabel')
     label_pedir_logs.place(relx=0.5, y=100, anchor="center")
 
+    root.bind("<Return>", lambda event: seleccionarRutaLogs(go_to_monitor))
+
 
 ########################SELECCIÓN RUTA BANS########################  MAL
 
 
 def seleccionarRutaBans(go_to_monitor=False):
-    global main_ban_path
+    global main_ban_path, root
+
+    root.unbind("<Return>")
 
     main_ban_path = combo_box_bans.get()
     set_key(".env", "BAN_PATH", main_ban_path)
@@ -307,12 +317,16 @@ def putBansItems(go_to_monitor=False):
         style='info.TLabel')
     label_pedir_bans.place(relx=0.5, y=100, anchor="center")
 
+    root.bind("<Return>", lambda event: seleccionarRutaBans(go_to_monitor))
+
 
 ########################INTRODUCIÓN NOMBRE DATABASE########################
 
 
 def seleccionarNombreDatabase(go_to_monitor=False):
-    global data_base_name
+    global data_base_name, root
+
+    root.unbind("<Return>")
 
     data_base_name = combo_box_database.get()
     set_key(".env", "DATABASE_FILE", data_base_name)
@@ -360,12 +374,16 @@ def putsDatabaseItems(go_to_monitor=False):
         style='info.TLabel')
     label_pedir_database.place(relx=0.5, y=100, anchor="center")
 
+    root.bind("<Return>", lambda event: seleccionarNombreDatabase(go_to_monitor))
+
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
 
 def seleccionarTelegramUser(muestraAviso=True):
-    global telegram_username
+    global telegram_username, root
+
+    root.unbind("<Return>")
 
     telegram_username = input_telegram.get()
     set_key(".env", "TELEGRAM_USER", telegram_username)
@@ -413,6 +431,8 @@ def putsTelegramItems(muestraAviso=True):
         font="Helvetica 12 bold",
         style='info.TLabel')
     label_pedir_telegram.place(relx=0.5, y=100, anchor="center")
+
+    root.bind("<Return>", lambda event: seleccionarTelegramUser(muestraAviso))
 
 
 ######################## AVISOS ########################
@@ -749,16 +769,19 @@ if __name__ == "__main__":
         data_base_name = os.getenv("DATABASE_FILE")
         telegram_username = os.getenv("TELEGRAM_USER")
 
-        if ((main_config_path and not (os.access(main_config_path, os.R_OK) and os.access(main_config_path, os.W_OK)))
-                and (main_log_path and not os.access(main_log_path, os.R_OK))
-                and (main_ban_path and not (os.access(main_ban_path, os.R_OK) and os.access(main_ban_path, os.W_OK)))
-            or not os.path.isfile(main_config_path) or not os.path.isfile(main_log_path) or not os.path.isfile(main_ban_path)
-        ):
-            dir_actual = subprocess.getoutput("/usr/bin/pwd")
-            usuario = subprocess.getoutput("whoami")
-            subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
-
         first_time = not main_server or not main_config_path or not main_log_path or not main_ban_path or not data_base_name or not telegram_username
+        
+        if not first_time:
+            if ((main_config_path and not (os.access(main_config_path, os.R_OK) and os.access(main_config_path, os.W_OK)))
+                    and (main_log_path and not os.access(main_log_path, os.R_OK))
+                    and (main_ban_path and not (os.access(main_ban_path, os.R_OK) and os.access(main_ban_path, os.W_OK)))
+                or not os.path.isfile(main_config_path) or not os.path.isfile(main_log_path) or not os.path.isfile(main_ban_path)
+            ):
+                dir_actual = subprocess.getoutput("/usr/bin/pwd")
+                usuario = subprocess.getoutput("whoami")
+                subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
+
+
 
     crearVentanaPrincipal()
 
