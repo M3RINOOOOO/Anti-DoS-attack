@@ -87,9 +87,9 @@ def seleccionarServidor(servidor, go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        usuario = subprocess.getoutput("whoami")
-        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
+        # dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        # usuario = subprocess.getoutput("whoami")
+        # subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putConfigItems()
 
@@ -337,9 +337,9 @@ def seleccionarNombreDatabase(go_to_monitor=False):
 
     if go_to_monitor:
         putMonitorItems()
-        dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        usuario = subprocess.getoutput("whoami")
-        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
+        # dir_actual = subprocess.getoutput("/usr/bin/pwd")
+        # usuario = subprocess.getoutput("whoami")
+        # subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putsTelegramItems()
 
@@ -387,6 +387,7 @@ def seleccionarTelegramUser(muestraAviso=True):
 
     telegram_username = input_telegram.get()
     set_key(".env", "TELEGRAM_USER", telegram_username)
+
     dir_actual = subprocess.getoutput("/usr/bin/pwd")
     usuario = subprocess.getoutput("whoami")
     subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
