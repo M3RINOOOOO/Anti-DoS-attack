@@ -88,7 +88,8 @@ def seleccionarServidor(servidor, go_to_monitor=False):
     if go_to_monitor:
         putMonitorItems()
         dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+        usuario = subprocess.getoutput("whoami")
+        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putConfigItems()
 
@@ -140,7 +141,8 @@ def seleccionarRutaConfig(go_to_monitor=False):
     if go_to_monitor:
         putMonitorItems()
         dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+        usuario = subprocess.getoutput("whoami")
+        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putLogsItems()
 
@@ -200,7 +202,8 @@ def seleccionarRutaLogs(go_to_monitor=False):
     if go_to_monitor:
         putMonitorItems()
         dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+        usuario = subprocess.getoutput("whoami")
+        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putBansItems()
 
@@ -260,7 +263,8 @@ def seleccionarRutaBans(go_to_monitor=False):
     if go_to_monitor:
         putMonitorItems()
         dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+        usuario = subprocess.getoutput("whoami")
+        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putsDatabaseItems()
 
@@ -320,7 +324,8 @@ def seleccionarNombreDatabase(go_to_monitor=False):
     if go_to_monitor:
         putMonitorItems()
         dir_actual = subprocess.getoutput("/usr/bin/pwd")
-        subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+        usuario = subprocess.getoutput("whoami")
+        subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
     else:
         putsTelegramItems()
 
@@ -365,7 +370,8 @@ def seleccionarTelegramUser(muestraAviso=True):
     telegram_username = input_telegram.get()
     set_key(".env", "TELEGRAM_USER", telegram_username)
     dir_actual = subprocess.getoutput("/usr/bin/pwd")
-    subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+    usuario = subprocess.getoutput("whoami")
+    subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
 
     input_telegram.destroy()
     boton_submit_telegram.destroy()
@@ -746,7 +752,8 @@ if __name__ == "__main__":
 
         if main_server and main_config_path and main_log_path and main_ban_path:
             dir_actual = subprocess.getoutput("/usr/bin/pwd")
-            subprocess.call(["/usr/bin/pkexec", f"{dir_actual}/setup.sh"])
+            usuario = subprocess.getoutput("whoami")
+            subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
 
         first_time = not main_server or not main_config_path or not main_log_path or not main_ban_path or not data_base_name or not telegram_username
 
