@@ -279,7 +279,7 @@ def main():
             print("[!] Saliendo...")
             sys.exit(1)
 
-        anti_dos = AntiDOSWeb.AntiDOSWeb(server, log_path, config_path,
+        anti_dos = AntiDOSWeb.AntiDOSWeb(server, config_path, log_path,
                                          ban_path, "%d/%b/%Y:%H:%M:%S %z",
                                          database_file, telegram_user)
         print("\n[+] Monitorizando...\n")

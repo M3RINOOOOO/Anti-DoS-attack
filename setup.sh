@@ -32,7 +32,6 @@ NEW_BAN_PATH=$(echo "$BAN_PATH" | sed "s/'//g")
 
 sudo /usr/bin/touch "$NEW_BAN_PATH"
 
-# Luego, utiliza las nuevas variables en tus comandos
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_CONFIG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":r "$NEW_LOG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_BAN_PATH"
