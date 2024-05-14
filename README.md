@@ -82,6 +82,8 @@ Desde aquí podemos:
 
 - Ver una gráfica con las peticiones recibidas por segundo en tiempo real
 - Empezar/detener la monitorización
+- Cambiar el color de la gráfica
+- Cambiar el intervalo de tiempo a representar en la gráfica
 - Cambiar las variables que necesitemos
 - Ver qué IPs han sido baneadas/desbaneadas
 
