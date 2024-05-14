@@ -455,7 +455,6 @@ def cambiarColor(color_antiguo):
     graph.cambiarColor(colors.hex)
 
 
-
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
     global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos, boton_cambiar_color 
@@ -750,7 +749,11 @@ if __name__ == "__main__":
         data_base_name = os.getenv("DATABASE_FILE")
         telegram_username = os.getenv("TELEGRAM_USER")
 
-        if main_server and main_config_path and main_log_path and main_ban_path:
+        if ((main_config_path and not (os.access(main_config_path, os.R_OK) and os.access(main_config_path, os.W_OK)))
+                and (main_log_path and not os.access(main_log_path, os.R_OK))
+                and (main_ban_path and not (os.access(main_ban_path, os.R_OK) and os.access(main_ban_path, os.W_OK)))
+            or not os.path.isfile(main_config_path) or not os.path.isfile(main_log_path) or not os.path.isfile(main_ban_path)
+        ):
             dir_actual = subprocess.getoutput("/usr/bin/pwd")
             usuario = subprocess.getoutput("whoami")
             subprocess.run(f"/usr/bin/pkexec {dir_actual}/setup.sh {usuario}", shell=True)
