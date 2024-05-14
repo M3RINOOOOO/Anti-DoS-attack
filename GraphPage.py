@@ -17,7 +17,6 @@ class GraphPage(tk.Frame):
             self.graph_color, = sns.color_palette("muted", 1).as_hex()
         else:
             self.graph_color = color
-        #self.graph_color = "red"
 
         # nb_points: number of points for the graph
         tk.Frame.__init__(self, parent)

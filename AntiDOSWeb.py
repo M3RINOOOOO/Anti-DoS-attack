@@ -183,16 +183,13 @@ class AntiDOSWeb:
 
     def banearIp(self, ip):
         try:
-            print(self.ban_path)
             with open(self.ban_path, "a") as ban_file:
                 esta_baneado = (ip in self.ips_baneadas) and (self.ips_baneadas[ip]["is_banned"])
-                print("TE INTENTO BANEAR TONTITO")
                 if (f"Deny from {ip}" not in open(
                         self.ban_path).read()) and not esta_baneado:
 
                     if self.server == "APACHE":
                         ban_file.write(f"Deny from {ip}\n")
-                        print("TE INTENTO BANEAR TONTITO")
 
                     elif self.server == "NGINX":
 
@@ -227,7 +224,6 @@ class AntiDOSWeb:
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
-            print("ERROR!!!!!")
             return f"Error al banear la IP {ip}: {e}"
 
     def enviarAvisoPorTelegram(self, ip):
