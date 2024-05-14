@@ -414,6 +414,7 @@ def putsTelegramItems(muestraAviso=True):
         "<KeyRelease>", lambda event: verificarContenido(
             input_telegram, boton_submit_telegram))
     input_telegram.place(relx=0.5, y=160, anchor="center")
+    input_telegram.focus_set()
 
     boton_submit_telegram = ttk.Button(
         root,
@@ -770,7 +771,7 @@ if __name__ == "__main__":
         telegram_username = os.getenv("TELEGRAM_USER")
 
         first_time = not main_server or not main_config_path or not main_log_path or not main_ban_path or not data_base_name or not telegram_username
-        
+
         if not first_time:
             if ((main_config_path and not (os.access(main_config_path, os.R_OK) and os.access(main_config_path, os.W_OK)))
                     and (main_log_path and not os.access(main_log_path, os.R_OK))
