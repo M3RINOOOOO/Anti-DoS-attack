@@ -25,6 +25,16 @@ colors = None
 anti_dos = None
 
 def defHandler(sig, frame):
+    """
+        Manejador de la señal SIGINT (Ctrl+C) para salir del programa.
+
+        Args:
+            sig (int): Número de la señal recibida.
+            frame (frame): Marco de la señal.
+
+        Returns:
+            None
+    """
     print("\n\n[!] Saliendo forzadamente...\n")
     sys.exit(1)
 
@@ -39,6 +49,15 @@ graph_thread = None
 
 # Llamar siempre después de un resize
 def centrarVentana(ventana):
+    """
+        Centra una ventana en la pantalla.
+
+        Args:
+            ventana: La ventana a centrar.
+
+        Returns:
+            None
+    """
     ventana.update_idletasks()
     ancho_ventana = ventana.winfo_width()
     altura_ventana = ventana.winfo_height()
@@ -49,6 +68,16 @@ def centrarVentana(ventana):
 
 
 def verificarContenido(campo_entrada, boton_submit):
+    """
+        Verifica si hay contenido en un campo de entrada y actualiza el estado de un botón.
+
+        Args:
+            campo_entrada: El campo de entrada a verificar.
+            boton_submit: El botón cuyo estado se actualizará.
+
+        Returns:
+            None
+    """
     input = campo_entrada.get()
     if input:
         boton_submit.config(text="Enviar", style='success.TButton', state=ttk.NORMAL)
@@ -58,9 +87,15 @@ def verificarContenido(campo_entrada, boton_submit):
 
 ########################CREACIÓN VENTANA PRINCIPAL########################
 def crearVentanaPrincipal():
+    """
+        Crea la ventana principal de la aplicación.
+
+        Returns:
+            None
+    """
     global root, label_titulo
     root = ttk.Window(themename="superhero")
-    root.protocol("WM_DELETE_WINDOW", on_closing)
+    root.protocol("WM_DELETE_WINDOW", onClosing)
     root.title("DoS Tester GUI")
     imagen_icono = ttk.PhotoImage(file="images/kaki.png")
     root.iconphoto(True, imagen_icono)
@@ -76,6 +111,16 @@ def crearVentanaPrincipal():
 
 
 def seleccionarServidor(servidor, go_to_monitor=False):
+    """
+        Selecciona el servidor a monitorizar y muestra la siguiente pantalla.
+
+        Args:
+            servidor (str): El servidor seleccionado (APACHE o NGINX).
+            go_to_monitor (bool): Indica si se debe ir directamente a la pantalla de monitoreo.
+
+        Returns:
+            None
+    """
     global main_server
 
     main_server = servidor
@@ -95,6 +140,15 @@ def seleccionarServidor(servidor, go_to_monitor=False):
 
 
 def putServerItems(go_to_monitor=False):
+    """
+        Muestra la pantalla para seleccionar el servidor a monitorizar.
+
+        Args:
+            go_to_monitor (bool): Indica si se debe ir directamente a la pantalla de monitoreo.
+
+        Returns:
+            None
+    """
     global label_servidor, boton_apache, boton_nginx
     
     root.resizable(True, True)
@@ -129,6 +183,15 @@ def putServerItems(go_to_monitor=False):
 
 
 def seleccionarRutaConfig(go_to_monitor=False):
+    """
+        Selecciona la ruta del archivo de configuración y muestra la siguiente pantalla.
+
+        Args:
+            go_to_monitor (bool): Indica si se debe ir directamente a la pantalla de monitoreo.
+
+        Returns:
+            None
+    """
     global main_config_path, root
 
     root.unbind("<Return>")
@@ -150,6 +213,15 @@ def seleccionarRutaConfig(go_to_monitor=False):
 
 
 def putConfigItems(go_to_monitor=False):
+    """
+        Muestra la pantalla para seleccionar la ruta del archivo de configuración.
+
+        Args:
+            go_to_monitor (bool): Indica si se debe ir directamente a la pantalla de monitoreo.
+
+        Returns:
+            None
+    """
     global combo_box_config, boton_submit_config, label_pedir_config
 
     label_titulo.place(relx=0.5, y=30, anchor="center")
@@ -479,6 +551,12 @@ def cambiarColor(color_antiguo):
 
 ######################## VENTANA PRINCIPAL PARA MONITORIZAR ########################
 def putMonitorItems():
+    """
+        Muestra la pantalla de monitoreo.
+
+        Returns:
+            None
+    """
     global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos, boton_cambiar_color 
 
     # Esconde la ventana del monitor
@@ -750,7 +828,13 @@ def modificarParametro():
 
 
 ######################## MAIN ########################
-def on_closing():
+def onClosing():
+    """
+        Función para cerrar la aplicación.
+
+        Returns:
+            None
+    """
     global animar
     animar = False
     if anti_dos is not None:
