@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Este script implementa una interfaz gráfica de usuario (GUI) para el monitoreo y la configuración de un sistema Anti-DOS.
+"""
+
 import time
 import ttkbootstrap as ttk
 from tkinter.scrolledtext import ScrolledText
