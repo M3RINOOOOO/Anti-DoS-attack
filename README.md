@@ -76,7 +76,7 @@ Si es la primera que ejecutas la herramienta, o faltan algunas de las variables 
 
 Una vez introducidos los datos, se te llevará a esta pantalla principal:
 
-![Pantalla de monitoreo](images/docs/pantallaPrincipal.jpg)
+![Pantalla de monitoreo](images/docs/pantallaPrincipal.png)
 
 Desde aquí podemos:
 
@@ -125,8 +125,8 @@ Estas variables son totalmente personalizables y ajustables a cada situación.
 
 - **AntiDOSWeb.py**: Este módulo contiene la implementación de funcionalidades para prevenir ataques DoS en una aplicación web.
 - **config.py**: Aquí se almacena la configuración de la aplicación, como URL, rutas de archivos y otros parámetros importantes.
-- **DoSTesterCLI.py**: Archivo que proporciona una interfaz de línea de comandos para ejecutar el programa Anti-DOS
-- **DoSTesterGUI.py**: Archivo que implementa la interfaz gráfica de usuario (GUI) para ejecutar el programa Anti-DOS de manera más visual e interactiva.
+- **AntiDoSCLI.py**: Archivo que proporciona una interfaz de línea de comandos para ejecutar el programa Anti-DOS
+- **AntiDoSGUI.py**: Archivo que implementa la interfaz gráfica de usuario (GUI) para ejecutar el programa Anti-DOS de manera más visual e interactiva.
 - **GraphPage.py**: Contiene la implementación de una página de gráficos para mostrar datos relacionados con ataques DoS.
 - **requirements.txt**: Archivo que enumera todas las dependencias y bibliotecas de Python necesarias para ejecutar la aplicación.
 - **setup.sh**: Script de configuración para configurar la aplicación.
