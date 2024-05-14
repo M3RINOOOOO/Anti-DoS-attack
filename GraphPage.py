@@ -14,7 +14,11 @@ class GraphPage(tk.Frame):
         self.num_segs = num_segs
         self.max_segs = max_segs
         sns.set_style("whitegrid")
-        self.graph_color, = sns.color_palette("muted", 1) if not color else color
+
+        if not color:
+            self.graph_color, = sns.color_palette("muted", 1)
+        else:
+            self.graph_color = color
         #self.graph_color = "red"
 
         # nb_points: number of points for the graph
