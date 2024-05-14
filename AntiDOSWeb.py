@@ -10,7 +10,10 @@ from termcolor import colored
 
 
 class AntiDOSWeb:
-    ########################################  CONSTRUCTOR   ########################################
+    """
+    Clase para gestionar la mitigación de ataques DDoS en servidores web.
+    """
+
     def __init__(self,
                  server,
                  config_path,
@@ -20,6 +23,19 @@ class AntiDOSWeb:
                  sqlite_path,
                  telegram_user,
                  scroll_gui=False):
+        """
+        Constructor de la clase AntiDOSWeb.
+
+        Parámetros:
+            server (str): El tipo de servidor web en uso (Apache o Nginx).
+            config_path (str): La ruta al archivo de configuración del servidor.
+            log_path (str): La ruta al archivo de logs del servidor.
+            ban_path (str): La ruta al archivo de baneos.
+            formato_fecha (str): El formato de fecha utilizado en los logs.
+            sqlite_path (str): La ruta al archivo de base de datos SQLite.
+            telegram_user (str): El usuario de Telegram para recibir notificaciones.
+            scroll_gui (opcional): Interfaz grafica de desplazamiento por el monitor.
+        """
         self.server = server
         self.config_path = config_path
         self.log_path = log_path
@@ -34,13 +50,15 @@ class AntiDOSWeb:
         self.lineas_leidas = 0
         self.extraerIpsHoras()
 
-######################################## GESTIÓN DE LOGS   ########################################
-
     def leerRegistros(self):
+        """
+        Lee los registros del archivo de logs y los devuelve como una cadena.
+
+        Retorna:
+            str: Los registros del archivo de logs.
+        """
         try:
             with open(self.log_path, "r") as log:
-                #for i in range(0, self.lineas_leidas):
-                #    next(log)
                 registros = log.read()
 
             return registros
@@ -48,6 +66,12 @@ class AntiDOSWeb:
             return f"Error al leer los registros: {e}"
 
     def leerRegistrosCompletos(self):
+        """
+        Lee todos los registros del archivo de logs y los devuelve como una cadena.
+
+        Retorna:
+            str: Todos los registros del archivo de logs.
+        """
         try:
             with open(self.log_path, "r") as log:
                 registros = log.read()
@@ -57,6 +81,9 @@ class AntiDOSWeb:
             return f"Error al leer los registros: {e}"
 
     def extraerIpsHoras(self):
+        """
+        Extrae las IP y las horas de acceso desde los registros del archivo de logs.
+        """
         ips_horas = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
         ips_desbanedas = self.obtenerIpsDesbaneadas()
@@ -90,6 +117,15 @@ class AntiDOSWeb:
             self.ips_horas = ips_horas
 
     def extraerHorasActividad(self, tiempo=0):
+        """
+        Extrae las horas de actividad a partir de los registros del archivo de logs.
+
+        Parámetros:
+            tiempo (int, opcional): El tiempo límite en formato de marca de tiempo UNIX. Por defecto es 0.
+
+        Retorna:
+            dict: Un diccionario que contiene las horas de actividad y el número de peticiones en cada hora.
+        """
         horas_actividad = {}
         patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\] ".*?" (\d{3}) \d+ "-" ".*?"'
 
@@ -113,9 +149,10 @@ class AntiDOSWeb:
 
         return horas_actividad
 
-######################################## GESTIÓN DE BASE DE DATOS   ########################################
-
     def inicializarBaseDatos(self):
+        """
+        Inicializa la base de datos SQLite para almacenar información sobre las IP baneadas.
+        """
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS ips (
@@ -129,6 +166,12 @@ class AntiDOSWeb:
         conexion.close()
 
     def obtenerBaseDatos(self):
+        """
+        Obtiene las IP baneadas de la base de datos SQLite.
+
+        Retorna:
+            dict: Un diccionario que contiene información sobre las IP baneadas.
+        """
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
         cursor.execute("SELECT ip, last_ban, n_bans, is_banned FROM ips")
@@ -143,9 +186,16 @@ class AntiDOSWeb:
         return ip_baneada
 
     def actualizarBaseDatos(self, ip, ban):
+        """
+        Actualiza la base de datos SQLite con información sobre las IP baneadas o desbaneadas.
+
+        Parámetros:
+            ip (str): La dirección IP a ser actualizada.
+            ban (bool): Indica si la IP está siendo baneada (True) o desbaneada (False).
+        """
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
-        cursor.execute("SELECT n_bans FROM ips WHERE ip = ?", (ip, ))
+        cursor.execute("SELECT n_bans FROM ips WHERE ip = ?", (ip,))
         n_bans = cursor.fetchone()
 
         if ban:
@@ -159,7 +209,7 @@ class AntiDOSWeb:
                     "INSERT INTO ips (ip, last_ban, n_bans, is_banned) VALUES (?, ?, ?, 1)",
                     (ip, datetime.now().timestamp(), 1))
         else:
-            cursor.execute("UPDATE ips SET is_banned = 0 WHERE ip = ?", (ip, ))
+            cursor.execute("UPDATE ips SET is_banned = 0 WHERE ip = ?", (ip,))
 
         conexion.commit()
         conexion.close()
@@ -167,6 +217,12 @@ class AntiDOSWeb:
         self.ips_baneadas = self.obtenerBaseDatos()
 
     def obtenerIpsDesbaneadas(self):
+        """
+        Obtiene las IP desbaneadas de la base de datos SQLite.
+
+        Retorna:
+            list: Una lista de direcciones IP desbaneadas.
+        """
         conexion = sqlite3.connect(self.sqlite_path)
         cursor = conexion.cursor()
         cursor.execute("SELECT ip FROM ips WHERE is_banned = 0")
@@ -179,9 +235,16 @@ class AntiDOSWeb:
 
         return ips_desbaneadas
 
-######################################## GESTIÓN DE BANEOS   ########################################
-
     def banearIp(self, ip):
+        """
+        Banea una dirección IP y la registra en la base de datos.
+
+        Parámetros:
+            ip (str): La dirección IP a ser baneada.
+
+        Retorna:
+            str: Mensaje indicando el resultado del baneo.
+        """
         try:
             with open(self.ban_path, "a") as ban_file:
                 esta_baneado = (ip in self.ips_baneadas) and (self.ips_baneadas[ip]["is_banned"])
@@ -220,19 +283,35 @@ class AntiDOSWeb:
                             "mi_color")
                         self.scroll_gui.config(state='disabled')
                     else:
-                        print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido", colored("baneada", "red"))
+                        print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido",
+                              colored("baneada", "red"))
 
             return f"La IP {ip} ha sido baneada"
         except Exception as e:
             return f"Error al banear la IP {ip}: {e}"
 
     def enviarAvisoPorTelegram(self, ip):
+        """
+        Envía un aviso de baneo por Telegram.
+
+        Parámetros:
+            ip (str): La dirección IP baneada.
+        """
         if self.telegram_user:
             requests.get(
                 f"{config.URL_ENVIAR_MENSAJE}?username={self.telegram_user}&ip={ip}"
             )
 
     def desbanearIp(self, ip):
+        """
+        Desbanea una dirección IP.
+
+        Parámetros:
+            ip (str): La dirección IP a ser desbaneada.
+
+        Retorna:
+            str: Mensaje indicando el resultado del desbaneo.
+        """
         try:
             with open(self.ban_path, "r") as ban_file:
                 lineas = ban_file.readlines()
@@ -252,10 +331,10 @@ class AntiDOSWeb:
         except Exception as e:
             return f"Error al desbanear la IP {ip}: {e}"
 
-
-######################################## MONITORIZACIÓN   ########################################
-
     def checkDos(self):
+        """
+        Verifica si se está produciendo un ataque DDoS y banea las IP involucradas.
+        """
         for ip, horas in self.ips_horas.items():
 
             for hora, peticiones in horas.items():
@@ -263,12 +342,15 @@ class AntiDOSWeb:
                     self.banearIp(ip)
 
     def checkDisBan(self):
+        """
+        Verifica si alguna IP baneada debe ser desbaneada según el tiempo de baneo.
+        """
         for ip in self.ips_baneadas:
-            tiempo_baneado = 2**(self.ips_baneadas[ip]["n_bans"] -
-                                 1) * config.TIEMPO_BANEO
+            tiempo_baneado = 2 ** (self.ips_baneadas[ip]["n_bans"] -
+                                   1) * config.TIEMPO_BANEO
             if self.ips_baneadas[ip][
-                    "last_ban"] + tiempo_baneado <= datetime.now().timestamp(
-                    ) and (self.ips_baneadas[ip]["is_banned"]):
+                "last_ban"] + tiempo_baneado <= datetime.now().timestamp(
+            ) and (self.ips_baneadas[ip]["is_banned"]):
 
                 hora_actual = datetime.now()
                 hora_formateada = hora_actual.strftime("%d/%b/%Y:%H:%M:%S %z")
@@ -281,20 +363,27 @@ class AntiDOSWeb:
                         "mi_color")
                     self.scroll_gui.config(state='disabled')
                 else:
-                    print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido", colored("desbaneada", "green"))
+                    print(colored(f"[ {hora_formateada}]", "light_blue"), f"La IP {ip} ha sido",
+                          colored("desbaneada", "green"))
                 self.actualizarBaseDatos(ip, False)
                 self.desbanearIp(ip)
 
     def monitor(self):
+        """
+        Inicia el monitoreo de los logs para detectar ataques DDoS y gestionar los baneos.
+        """
         self.monitorizar = True
         while self.monitorizar:
             self.checkDisBan()
             ult_mod_actual = os.stat(self.log_path).st_mtime
             self.extraerIpsHoras()
-                
+
             if ult_mod_actual != self.ult_mod:
                 self.ult_mod = ult_mod_actual
                 self.checkDos()
 
     def terminarMonitor(self):
+        """
+        Detiene el monitoreo de los logs.
+        """
         self.monitorizar = False
