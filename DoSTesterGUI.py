@@ -447,9 +447,9 @@ def mostrarVentanaMonitor():
     splash_root.destroy()
 
 
-def cambiarColor():
+def cambiarColor(color_antiguo):
     global colors, graph
-    ventana = ttkbootstrap.dialogs.colorchooser.ColorChooserDialog()
+    ventana = ttkbootstrap.dialogs.colorchooser.ColorChooserDialog(initialcolor=color_antiguo)
     ventana.show()
     colors = ventana.result
     graph.cambiarColor(colors.hex)
@@ -592,7 +592,7 @@ def putMonitorItems():
 
 
     # Boton para cambiar el color de la grafica
-    boton_cambiar_color = ttk.Button(root, text="Cambiar color de gráfica", command=cambiarColor, width=int((root.winfo_screenwidth() / 80)))
+    boton_cambiar_color = ttk.Button(root, text="Cambiar color de gráfica", command=lambda: cambiarColor(graph.graph_color), width=int((root.winfo_screenwidth() / 80)))
     boton_cambiar_color.place(relx=0.85, rely=0.725, anchor="center")
 
     #slider = ttk.Scale(root, from_=0, to=100, orient="horizontal", variable=slider_value, length=500, tickinterval=10, troughcolor="#C0C0C0")

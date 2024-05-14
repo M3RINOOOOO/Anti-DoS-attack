@@ -1,9 +1,7 @@
 import tkinter as tk
-from psutil import cpu_percent
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from datetime import datetime, timedelta
-from random import randint
 import matplotlib.dates as mdates
 import seaborn as sns
 
@@ -16,7 +14,7 @@ class GraphPage(tk.Frame):
         sns.set_style("whitegrid")
 
         if not color:
-            self.graph_color, = sns.color_palette("muted", 1)
+            self.graph_color, = sns.color_palette("muted", 1).as_hex()
         else:
             self.graph_color = color
         #self.graph_color = "red"
