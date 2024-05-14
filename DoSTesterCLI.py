@@ -31,7 +31,7 @@ def banner():
     print("Creado por:")
     print("    @M3RINOOOOO")
     print("    @manbolq")
-    print("-- KakiTeam --")
+    print("~~ KakiTeam ~~")
     print()
 
 
