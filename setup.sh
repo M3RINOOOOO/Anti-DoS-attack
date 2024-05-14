@@ -23,7 +23,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done < .env
 
 # Guardamos el nombre del usuario sin privilegios
-USER=$USER
+USER="$1"
 
 # Damos los permisos necesarios SOLO para el usuario que esta ejecutando el script
 NEW_CONFIG_PATH=$(echo "$CONFIG_PATH" | sed "s/'//g")
