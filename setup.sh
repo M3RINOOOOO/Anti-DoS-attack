@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Verificar si se proporciona un argumento
+if [ $# -eq 0 ]; then
+    echo -e "\n[!] Error: Debe proporcionar el nombre de usuario como argumento."
+    echo -e "[!] Modo de uso:"
+    echo -e "[!] $0 <nombre_de_usuario>"
+    exit 1
+fi
+
 
 # SERVER
 # 	- APACHE
