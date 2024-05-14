@@ -2,15 +2,6 @@
 
 Anti-DOS es una herramienta para mejorar la resistencia de los servidores web contra ataques de denegación de servicio (DoS), tanto a través de una interfaz de línea de comandos como de una interfaz gráfica de usuario (GUI).
 
-## Principal contenido del repositorio
-
-- **AntiDOSWeb.py**: Este módulo contiene la implementación de funcionalidades para prevenir ataques DoS en una aplicación web.
-- **config.py**: Aquí se almacena la configuración de la aplicación, como URL, rutas de archivos y otros parámetros importantes.
-- **DoSTesterCLI.py**: Archivo que proporciona una interfaz de línea de comandos para ejecutar el programa Anti-DOS
-- **DoSTesterGUI.py**: Archivo que implementa la interfaz gráfica de usuario (GUI) para ejecutar el programa Anti-DOS de manera más visual e interactiva.
-- **GraphPage.py**: Contiene la implementación de una página de gráficos para mostrar datos relacionados con ataques DoS.
-- **requirements.txt**: Archivo que enumera todas las dependencias y bibliotecas de Python necesarias para ejecutar la aplicación.
-- **setup.sh**: Script de configuración para configurar la aplicación.
 
 ## Instalación
 
@@ -30,7 +21,7 @@ Para instalar la herramienta, podemos seguir estos pasos
     ```bash
     chmod +x AntiDoSCLI.py AntiDoSGUI.py setup.sh
    ```
-3. Ya estás listo para ejecutar la herramienta para mejorar la seguridad de tu servidor!
+4. Ya estás listo para ejecutar la herramienta para mejorar la seguridad de tu servidor!
 
 
 ## Uso
@@ -49,7 +40,7 @@ Podemos ejecutar este script de dos formas:
     ```
   De esta forma, el script nos pedirá, de manera interactiva, los datos necesarios para montar la aplicación (Servidor a usar, rutas de los logs, archivo de configuración, etc.)
 
-    Para más información acerca del almacenamiento y modificación de variables globales, consulta [este apartado](#almacenamiento-y-modificacióin-de-las-variables-globales).
+    Para más información acerca del almacenamiento y modificación de variables globales, consulta [este apartado](#almacenamiento-y-modificación-de-las-variables-globales).
 - **Tomando argumentos**. También podemos pasar las variables necesarias mediante argumentos. Los argumentos disponibles de la herramienta se pueden consultar ejecutando:
     ```./AntiDoSCLI.py --help```:
 
@@ -64,7 +55,7 @@ Podemos ejecutar este script de dos formas:
       --database-file DATABASE_FILE
                             Archivo de base de datos
   ```
-  Si no se pasa alguno de esos argumentos, el valor para la respectiva variable se intentará tomar del archivo `.env`. En caso de que alguna variable necesaria no se haya proporcionado, el programa mostrará un mensaje de error y se cerrará. Para más información acerca del almacenamiento y modificación de variables globales, consulta [este apartado](#almacenamiento-y-modificacióin-de-las-variables-globales).
+  Si no se pasa alguno de esos argumentos, el valor para la respectiva variable se intentará tomar del archivo `.env`. En caso de que alguna variable necesaria no se haya proporcionado, el programa mostrará un mensaje de error y se cerrará. Para más información acerca del almacenamiento y modificación de variables globales, consulta [este apartado](#almacenamiento-y-modificación-de-las-variables-globales).
 
     A modo de ejemplo, si queremos ejecutar el programa proporcionando: servidor a usar, archivo de baneos, archivo de configuración y archivo de logs (en el ejemplo, para Apache), podríamos ejeuctar:
 
@@ -75,9 +66,34 @@ Podemos ejecutar este script de dos formas:
   
 ### Interfaz Gráfica (GUI)
 
+El formato más amigable de esta aplicación es usando el script `AntiDoSGUI.py`. Su uso es más sencillo que su versión de línea de comandos. Para iniciarlo, basta con ejecutar el comando:
+
+```bash
+./AntiDoSGUI.py
+```
+
+Si es la primera que ejecutas la herramienta, o faltan algunas de las variables necesarias para poder ejecutarse, la aplicación que guiará por una serie de pantallas para introducir los datos necesarios.
+
+Una vez introducidos los datos, se te llevará a esta pantalla principal:
+
+![Pantalla de monitoreo](images/docs/pantallaPrincipal.jpg)
+
+Desde aquí podemos:
+
+- Ver una gráfica con las peticiones recibidas por segundo en tiempo real
+- Empezar/detener la monitorización
+- Cambiar las variables que necesitemos
+- Ver qué IPs han sido baneadas/desbaneadas
+
 ## Conexión por Telegram
 
-## Almacenamiento y modificacióin de las variables globales
+Hemos configurado la aplicación para que,si se detecta un ataque DOS sobre tu página web, nuestro Bot de Telegram te envía una alerta.
+
+Para poder activar esta funcionalidad, necesitas tener una cuenta de Telegram e introducir tu nombre de usuario cuando la aplicación lo pida.
+
+Una vez hecho eso, tendrás que iniciar una conversación con el bot: `NOMBRE DEL BOT`. Basta con seguir las instrucciones que el mismo te indique.
+
+## Almacenamiento y modificación de las variables globales
 
 Anti-DOS trabaja principalmente con estas variables:
 
@@ -93,12 +109,31 @@ Cuando se modifican algunas de estas variables **desde la aplicación**, se ejec
 > [!WARNING]
 > Si vas a modificar alguna de estas variables del `.env` modificando el archivo en sí, asegúrate de ejecutar el script `setup.sh`.
 
+Además, en el archivo `config.py` se encuentran definidas, entre otras, dos variables globales:
+
+```python
+MAX_REQUESTS_PER_SEG = 40
+TIEMPO_BANEO = 3
+```
+
+- **MAX_REQUESTS_PER_SEG**. Indica el número máximo de peticiones que se va a permitir que una IP realice a nuestro servidor
+- **TIEMPO_BANEO**. Es el tiempo base, en segundos, que una dirección IP va a estar baneada. Este tiempo va aumentando exponencialmente, de forma que, si su valor es 3, primero estará baneado 3 segundos. Si vuelve a realizar más peticiones de las debidas, estará baneado 6 segundos, después 12, 24, etc.
+
+Estas variables son totalmente personalizables y ajustables a cada situación. 
+
+## Principal contenido del repositorio
+
+- **AntiDOSWeb.py**: Este módulo contiene la implementación de funcionalidades para prevenir ataques DoS en una aplicación web.
+- **config.py**: Aquí se almacena la configuración de la aplicación, como URL, rutas de archivos y otros parámetros importantes.
+- **DoSTesterCLI.py**: Archivo que proporciona una interfaz de línea de comandos para ejecutar el programa Anti-DOS
+- **DoSTesterGUI.py**: Archivo que implementa la interfaz gráfica de usuario (GUI) para ejecutar el programa Anti-DOS de manera más visual e interactiva.
+- **GraphPage.py**: Contiene la implementación de una página de gráficos para mostrar datos relacionados con ataques DoS.
+- **requirements.txt**: Archivo que enumera todas las dependencias y bibliotecas de Python necesarias para ejecutar la aplicación.
+- **setup.sh**: Script de configuración para configurar la aplicación.
+
 
 
 ## Contribución
 
 Las contribuciones son bienvenidas! Si deseas mejorar esta herramienta, abre un issue o crea un pull request.
 
-## Licencia
-
-Este proyecto está bajo la [Licencia MIT](LICENSE).
