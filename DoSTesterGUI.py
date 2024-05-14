@@ -100,15 +100,16 @@ def crearVentanaPrincipal():
     global root, label_titulo
     root = ttk.Window(themename="superhero")
     root.protocol("WM_DELETE_WINDOW", onClosing)
-    root.title("DoS Tester GUI")
+    root.title("Anti-DOS")
     imagen_icono = ttk.PhotoImage(file="images/kaki.png")
     root.iconphoto(True, imagen_icono)
     label_titulo = ttk.Label(root,
-                             text="DoS Tester",
+                             text="Anti-DOS",
                              font="Helvetica 30 bold",
                              style='info.TLabel',
                              foreground='#247ca5')
-    label_titulo.place(relx=0.5, y=30, anchor="center")
+    print(root.winfo_screenheight()/20)
+    label_titulo.place(relx=0.5, y=int(root.winfo_screenheight()/50), anchor="center")
 
 
 ########################SELECCIÓN SERVIDOR########################
