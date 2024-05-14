@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import subprocess
-from termcolor import colored
 import AntiDOSWeb
 import config
 import sys, signal
@@ -12,6 +11,7 @@ from simple_term_menu import TerminalMenu
 
 
 def def_handler(sig, frame):
+    """Manejador de señal para la señal SIGINT (Ctrl+C)"""
     print("\n\n[!] Saliendo forzadamente...\n")
     sys.exit(1)
 
@@ -19,6 +19,7 @@ def def_handler(sig, frame):
 signal.signal(signal.SIGINT, def_handler)
 
 def banner():
+    """Imprime el banner del programa."""
     print()
     print(" █████╗ ███╗   ██╗████████╗██╗      ██████╗  ██████╗ ███████╗")
     print("██╔══██╗████╗  ██║╚══██╔══╝██║      ██╔══██╗██╔═══██╗██╔════╝")
@@ -35,6 +36,7 @@ def banner():
 
 
 def parseArgs():
+    """Procesa los argumentos de línea de comandos."""
     parser = argparse.ArgumentParser(
         description=
         'Procesamiento de los argumentos.\nSi no se pasa algún argumento se cogerá el valor que hay en el archivo .env'
@@ -58,13 +60,18 @@ def parseArgs():
 
 
 def main():
+    """Función principal del programa."""
+    # Imrpimimos el banner
     banner()
 
+    # Se cargan las variables del archivo ".env"
     load_dotenv()
 
+    # Se parsean los argumentos de la linea de comandos
     args = parseArgs()
 
     if args.interactive:
+        # Si se ha pasado el argumento --interactive, se pediran todos los datos necesarios
         try:
             menu = TerminalMenu(config.SERVERS,
                                 title="[+] Selecciona el servidor:")
@@ -201,7 +208,7 @@ def main():
                 print(f"[-] Usuario de Telegram: {telegram_user}")
                 set_key(".env", "TELEGRAM_USER", telegram_user)
 
-            subprocess.call(["./setup.sh"])
+            subprocess.run("./setup.sh $(whoami)")
             anti_dos = AntiDOSWeb.AntiDOSWeb(server, config_path, log_path,
                                              ban_path, "%d/%b/%Y:%H:%M:%S %z",
                                              database_file, telegram_user)
@@ -212,8 +219,12 @@ def main():
             print(e)
             print("\n[!] Ha ocurrido un error\n[!] Saliendo...")
             sys.exit(1)
+
+    # Si no se introduce --interactive, se cogeran los datos del .env
+    # El usuario tambien puede introducir datos como argumentos
+    # Por ejemplo, para poner el servidor de Apache, puede añadir la flag --server apache
     else:
-        server = args.server.lower() if args.server else os.getenv("SERVER")
+        server = args.server.upper() if args.server else os.getenv("SERVER")
         ban_path = args.ban_path if args.ban_path else os.getenv("BAN_PATH")
         log_path = args.log_path if args.log_path else os.getenv("LOG_PATH")
         config_path = args.config_path if args.config_path else os.getenv(
@@ -257,7 +268,7 @@ def main():
             set_key(".env", "TELEGRAM_USER", telegram_user)
 
         if args.server or args.ban_path or args.log_path or args.config_path:
-            subprocess.call(["./setup.sh"])
+            subprocess.run("./setup.sh $(whoami)", shell=True)
 
         if faltan_args_obligatorios:
             print("\n[!] ATENCION")
