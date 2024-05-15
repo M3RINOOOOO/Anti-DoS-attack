@@ -117,7 +117,7 @@ Hemos configurado la aplicación para que,si se detecta un ataque DOS sobre tu p
 
 Para poder activar esta funcionalidad, necesitas tener una cuenta de Telegram e introducir tu nombre de usuario cuando la aplicación lo pida.
 
-Una vez hecho eso, tendrás que iniciar una conversación con el bot: `NOMBRE DEL BOT`. Basta con seguir las instrucciones que el mismo te indique.
+Una vez hecho eso, tendrás que iniciar una conversación con el bot: [@Anti_Dos_bot](https://t.me/Anti_Dos_bot). Basta con enviar el comando `/start` cada, aproxidamente, 24 horas.
 
 ## Almacenamiento y modificación de las variables globales
 
