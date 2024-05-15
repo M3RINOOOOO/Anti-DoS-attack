@@ -54,7 +54,7 @@ if [ "$NEW_SERVER" = "APACHE" ]; then
   RAIZ_WEB=$(/usr/bin/dirname $NEW_BAN_PATH)
   if [ -f "$NEW_CONFIG_PATH" ]; then
     # Agrega las líneas al final del archivo
-    cat $NEW_CONFIG_PATH | grep "AllowOverride All" || echo -e "<Directory $RAIZ_WEB>\n\tAllowOverride All\n</Directory>" >> $NEW_CONFIG_PATH
+    (cat $NEW_CONFIG_PATH | grep "AllowOverride All" || echo -e "<Directory $RAIZ_WEB>\n\tAllowOverride All\n</Directory>" >> $NEW_CONFIG_PATH) &>/dev/null
 
     sudo /usr/sbin/service apache2 reload
   else
