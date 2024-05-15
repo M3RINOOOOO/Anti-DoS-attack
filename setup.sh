@@ -34,7 +34,7 @@ done < .env
 USER="$1"
 
 # Damos los permisos necesarios SOLO para el usuario que esta ejecutando el script
-NEW_SERVER=$(echo "SERVER" | sed "s/'//g")
+NEW_SERVER=$(echo "$SERVER" | sed "s/'//g")
 NEW_CONFIG_PATH=$(echo "$CONFIG_PATH" | sed "s/'//g")
 NEW_LOG_PATH=$(echo "$LOG_PATH" | sed "s/'//g")
 NEW_BAN_PATH=$(echo "$BAN_PATH" | sed "s/'//g")
