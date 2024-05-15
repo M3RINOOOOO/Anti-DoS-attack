@@ -669,52 +669,51 @@ def putMonitorItems():
     """
     global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos, boton_cambiar_color 
 
-    # Esconde la ventana del monitor
-    # root.withdraw()
+    #Esconde la ventana del monitor
+    root.withdraw()
 
-    # kaki = ttk.PhotoImage(file="images/kaki.png")
-    # kaki = kaki.subsample(3)
+    kaki = ttk.PhotoImage(file="images/kaki.png")
+    kaki = kaki.subsample(3)
 
-    # splash_root = ttk.Toplevel()
-    # splash_root.withdraw()
+    splash_root = ttk.Toplevel()
+    splash_root.withdraw()
 
-    # splash_label = ttk.Label(splash_root,
-    #                          text="Cargando...",
-    #                          font="Helvetica 30 bold",
-    #                          style='info.TLabel',
-    #                          background='#247ca5')
-    # splash_label.pack(pady=20)
+    splash_label = ttk.Label(splash_root,
+                             text="Cargando...",
+                             font="Helvetica 30 bold",
+                             style='info.TLabel',
+                             background='#247ca5')
+    splash_label.pack(pady=20)
 
-    # # Agregar la imagen debajo del título
-    # image_label = ttk.Label(splash_root, image=kaki)
-    # image_label.pack(pady=40)
+    # Agregar la imagen debajo del título
+    image_label = ttk.Label(splash_root, image=kaki)
+    image_label.pack(pady=40)
 
-    # progress_bar = ttk.Progressbar(splash_root,
-    #                                orient="horizontal",
-    #                                length=300,
-    #                                mode="determinate")
-    # progress_bar.pack(pady=10)
+    progress_bar = ttk.Progressbar(splash_root,
+                                   orient="horizontal",
+                                   length=300,
+                                   mode="determinate")
+    progress_bar.pack(pady=10)
 
-    # splash_root.wm_attributes('-type', 'splash')
-    # splash_root.title("Pantalla de carga")
-    # splash_root.geometry("400x500")
-    # splash_root.config(background="#247ca5")
-    # splash_root.resizable(False, False)
+    splash_root.wm_attributes('-type', 'splash')
+    splash_root.title("Pantalla de carga")
+    splash_root.geometry("400x500")
+    splash_root.config(background="#247ca5")
+    splash_root.resizable(False, False)
 
-    # # Centrar la ventana
-    # splash_root.deiconify()
-    # centrarVentana(splash_root)
+    # Centrar la ventana
+    splash_root.deiconify()
+    centrarVentana(splash_root)
 
-    # for i in range(1, 101):
-    #     progress_bar["value"] = i
-    #     splash_root.update_idletasks()
-    #     time.sleep(0.03)
+    for i in range(1, 101):
+        progress_bar["value"] = i
+        splash_root.update_idletasks()
+        time.sleep(0.03)
 
-    # splash_root.after(0, mostrarVentanaMonitor)
+    splash_root.after(0, mostrarVentanaMonitor)
 
     root.attributes('-zoomed', True)
     label_titulo.place(relx=0.5, rely=0.025, anchor="center")
-    root.resizable(False, False)
     scrolled_text_baneos = ScrolledText(root,
                                         width=int((root.winfo_screenwidth() / 11.15)),
                                         height=(root.winfo_screenheight() // 100),
