@@ -108,7 +108,6 @@ def crearVentanaPrincipal():
                              font="Helvetica 30 bold",
                              style='info.TLabel',
                              foreground='#247ca5')
-    print(root.winfo_screenheight()/20)
     label_titulo.place(relx=0.5, y=int(root.winfo_screenheight()/50), anchor="center")
 
 
@@ -186,7 +185,6 @@ def putServerItems(go_to_monitor=False):
 
 ########################SELECCIÓN RUTA CONFIG########################
 
-
 def seleccionarRutaConfig(go_to_monitor=False):
     """
         Selecciona la ruta del archivo de configuración y muestra la siguiente pantalla.
@@ -207,6 +205,7 @@ def seleccionarRutaConfig(go_to_monitor=False):
     label_pedir_config.destroy()
     boton_submit_config.destroy()
     combo_box_config.destroy()
+    boton_volver_config.destroy()
 
     if go_to_monitor:
         putMonitorItems()
@@ -216,6 +215,19 @@ def seleccionarRutaConfig(go_to_monitor=False):
     else:
         putLogsItems()
 
+def VolverConfig(go_to_monitor=False):
+
+    root.unbind("<Return>")
+
+    label_pedir_config.destroy()
+    boton_submit_config.destroy()
+    combo_box_config.destroy()
+    boton_volver_config.destroy()
+
+    if go_to_monitor:
+        putMonitorItems()
+    else:
+        putServerItems()
 
 def putConfigItems(go_to_monitor=False):
     """
@@ -227,7 +239,7 @@ def putConfigItems(go_to_monitor=False):
         Returns:
             None
     """
-    global combo_box_config, boton_submit_config, label_pedir_config
+    global combo_box_config, boton_submit_config, label_pedir_config, boton_volver_config
 
     label_titulo.place(relx=0.5, y=30, anchor="center")
     root.resizable(True, True)
@@ -254,7 +266,7 @@ def putConfigItems(go_to_monitor=False):
         width=15,
         command=lambda: seleccionarRutaConfig(go_to_monitor),
         style='success.TButton')
-    boton_submit_config.place(relx=0.5, y=250, anchor="center")
+    boton_submit_config.place(relx=0.75, y=250, anchor="center")
 
     label_pedir_config = ttk.Label(
         root,
@@ -266,6 +278,13 @@ def putConfigItems(go_to_monitor=False):
 
     root.bind("<Return>", lambda event: seleccionarRutaConfig(go_to_monitor))
 
+    boton_volver_config = ttk.Button(
+        root,
+        text="Volver",
+        width=15,
+        command=lambda: VolverConfig(go_to_monitor),
+        style='danger.TButton')
+    boton_volver_config.place(relx=0.25, y=250, anchor="center")
 
 ########################SELECCIÓN RUTA LOGS########################
 
@@ -281,6 +300,8 @@ def seleccionarRutaLogs(go_to_monitor=False):
     label_pedir_logs.destroy()
     boton_submit_logs.destroy()
     combo_box_logs.destroy()
+    boton_volver_logs.destroy()
+    
 
     if go_to_monitor:
         putMonitorItems()
@@ -290,9 +311,22 @@ def seleccionarRutaLogs(go_to_monitor=False):
     else:
         putBansItems()
 
+def VolverLogs(go_to_monitor=False):
+    
+        root.unbind("<Return>")
+    
+        label_pedir_logs.destroy()
+        boton_submit_logs.destroy()
+        combo_box_logs.destroy()
+        boton_volver_logs.destroy()
+    
+        if go_to_monitor:
+            putMonitorItems()
+        else:
+            putConfigItems()
 
 def putLogsItems(go_to_monitor=False):
-    global combo_box_logs, boton_submit_logs, label_pedir_logs
+    global combo_box_logs, boton_submit_logs, label_pedir_logs, boton_volver_logs
 
     label_titulo.place(relx=0.5, y=30, anchor="center")
     root.resizable(True, True)
@@ -319,7 +353,7 @@ def putLogsItems(go_to_monitor=False):
         width=15,
         command=lambda: seleccionarRutaLogs(go_to_monitor),
         style='success.TButton')
-    boton_submit_logs.place(relx=0.5, y=250, anchor="center")
+    boton_submit_logs.place(relx=0.75, y=250, anchor="center")
 
     label_pedir_logs = ttk.Label(
         root,
@@ -331,6 +365,13 @@ def putLogsItems(go_to_monitor=False):
 
     root.bind("<Return>", lambda event: seleccionarRutaLogs(go_to_monitor))
 
+    boton_volver_logs = ttk.Button(
+        root,
+        text="Volver",
+        width=15,
+        command=lambda: VolverLogs(go_to_monitor),
+        style='danger.TButton')
+    boton_volver_logs.place(relx=0.25, y=250, anchor="center")
 
 ########################SELECCIÓN RUTA BANS########################  MAL
 
@@ -346,6 +387,7 @@ def seleccionarRutaBans(go_to_monitor=False):
     label_pedir_bans.destroy()
     boton_submit_bans.destroy()
     combo_box_bans.destroy()
+    boton_volver_bans.destroy()
 
     if go_to_monitor:
         putMonitorItems()
@@ -355,9 +397,22 @@ def seleccionarRutaBans(go_to_monitor=False):
     else:
         putsDatabaseItems()
 
+def VolverBans(go_to_monitor=False):
+        
+            root.unbind("<Return>")
+        
+            label_pedir_bans.destroy()
+            boton_submit_bans.destroy()
+            combo_box_bans.destroy()
+            boton_volver_bans.destroy()
+        
+            if go_to_monitor:
+                putMonitorItems()
+            else:
+                putLogsItems()
 
 def putBansItems(go_to_monitor=False):
-    global combo_box_bans, boton_submit_bans, label_pedir_bans
+    global combo_box_bans, boton_submit_bans, label_pedir_bans, boton_volver_bans
 
     label_titulo.place(relx=0.5, y=30, anchor="center")
     root.resizable(True, True)
@@ -384,7 +439,7 @@ def putBansItems(go_to_monitor=False):
         width=15,
         command=lambda: seleccionarRutaBans(go_to_monitor),
         style='success.TButton')
-    boton_submit_bans.place(relx=0.5, y=250, anchor="center")
+    boton_submit_bans.place(relx=0.75, y=250, anchor="center")
 
     label_pedir_bans = ttk.Label(
         root,
@@ -396,6 +451,13 @@ def putBansItems(go_to_monitor=False):
 
     root.bind("<Return>", lambda event: seleccionarRutaBans(go_to_monitor))
 
+    boton_volver_bans = ttk.Button(
+        root,
+        text="Volver",
+        width=15,
+        command=lambda: VolverBans(go_to_monitor),
+        style='danger.TButton')
+    boton_volver_bans.place(relx=0.25, y=250, anchor="center")
 
 ########################INTRODUCIÓN NOMBRE DATABASE########################
 
@@ -411,6 +473,7 @@ def seleccionarNombreDatabase(go_to_monitor=False):
     label_pedir_database.destroy()
     boton_submit_database.destroy()
     combo_box_database.destroy()
+    boton_volver_database.destroy()
 
     if go_to_monitor:
         putMonitorItems()
@@ -420,9 +483,22 @@ def seleccionarNombreDatabase(go_to_monitor=False):
     else:
         putsTelegramItems()
 
+def VolverDatabase(go_to_monitor=False):
+            
+    root.unbind("<Return>")
+
+    label_pedir_database.destroy()
+    boton_submit_database.destroy()
+    combo_box_database.destroy()
+    boton_volver_database.destroy()
+
+    if go_to_monitor:
+        putMonitorItems()
+    else:
+        putBansItems()
 
 def putsDatabaseItems(go_to_monitor=False):
-    global combo_box_database, boton_submit_database, label_pedir_database
+    global combo_box_database, boton_submit_database, label_pedir_database, boton_volver_database
 
     label_titulo.place(relx=0.5, y=30, anchor="center")
     root.resizable(True, True)
@@ -442,7 +518,7 @@ def putsDatabaseItems(go_to_monitor=False):
         width=15,
         command=lambda: seleccionarNombreDatabase(go_to_monitor),
         style='success.TButton')
-    boton_submit_database.place(relx=0.5, y=250, anchor="center")
+    boton_submit_database.place(relx=0.75, y=250, anchor="center")
 
     label_pedir_database = ttk.Label(
         root,
@@ -453,6 +529,13 @@ def putsDatabaseItems(go_to_monitor=False):
 
     root.bind("<Return>", lambda event: seleccionarNombreDatabase(go_to_monitor))
 
+    boton_volver_database = ttk.Button(
+        root,
+        text="Volver",
+        width=15,
+        command=lambda: VolverDatabase(go_to_monitor),
+        style='danger.TButton')
+    boton_volver_database.place(relx=0.25, y=250, anchor="center")
 
 ########################INTRODUCIÓN USUARIO TELEGRAM########################
 
@@ -472,15 +555,30 @@ def seleccionarTelegramUser(muestraAviso=True):
     input_telegram.destroy()
     boton_submit_telegram.destroy()
     label_pedir_telegram.destroy()
+    boton_volver_telegram.destroy()
 
     putMonitorItems()
 
     if muestraAviso:
         putAviso()
 
+def volverTelegramUser(putAviso=True):
+    global telegram_username, root
+
+    root.unbind("<Return>")
+
+    input_telegram.destroy()
+    boton_submit_telegram.destroy()
+    label_pedir_telegram.destroy()
+    boton_volver_telegram.destroy()
+
+    if putAviso:
+        putsDatabaseItems()
+    else:
+        putMonitorItems()
 
 def putsTelegramItems(muestraAviso=True):
-    global input_telegram, boton_submit_telegram, label_pedir_telegram
+    global input_telegram, boton_submit_telegram, label_pedir_telegram, boton_volver_telegram
     
     label_titulo.place(relx=0.5, y=30, anchor="center")
     root.resizable(True, True)
@@ -501,7 +599,7 @@ def putsTelegramItems(muestraAviso=True):
         state=ttk.NORMAL,
         command=lambda: seleccionarTelegramUser(muestraAviso),
         style='danger.TButton')
-    boton_submit_telegram.place(relx=0.5, y=250, anchor="center")
+    boton_submit_telegram.place(relx=0.75, y=250, anchor="center")
 
     label_pedir_telegram = ttk.Label(
         root,
@@ -513,6 +611,13 @@ def putsTelegramItems(muestraAviso=True):
 
     root.bind("<Return>", lambda event: seleccionarTelegramUser(muestraAviso))
 
+    boton_volver_telegram = ttk.Button(
+        root,
+        text="Volver",
+        width=15,
+        command=lambda: volverTelegramUser(muestraAviso),
+        style='danger.TButton')
+    boton_volver_telegram.place(relx=0.25, y=250, anchor="center")
 
 ######################## AVISOS ########################
 
@@ -565,47 +670,47 @@ def putMonitorItems():
     global kaki, slider, splash_root, max, min, graph_thread, slider_label, root, anti_dos, opciones_parametros, boton_monitor, boton_parar_monitor, boton_cerrar, label_modificar_parametro, boton_modificar_parametro, menu_botones, menu, scrolled_text_baneos, boton_cambiar_color 
 
     # Esconde la ventana del monitor
-    root.withdraw()
+    # root.withdraw()
 
-    kaki = ttk.PhotoImage(file="images/kaki.png")
-    kaki = kaki.subsample(3)
+    # kaki = ttk.PhotoImage(file="images/kaki.png")
+    # kaki = kaki.subsample(3)
 
-    splash_root = ttk.Toplevel()
-    splash_root.withdraw()
+    # splash_root = ttk.Toplevel()
+    # splash_root.withdraw()
 
-    splash_label = ttk.Label(splash_root,
-                             text="Cargando...",
-                             font="Helvetica 30 bold",
-                             style='info.TLabel',
-                             background='#247ca5')
-    splash_label.pack(pady=20)
+    # splash_label = ttk.Label(splash_root,
+    #                          text="Cargando...",
+    #                          font="Helvetica 30 bold",
+    #                          style='info.TLabel',
+    #                          background='#247ca5')
+    # splash_label.pack(pady=20)
 
-    # Agregar la imagen debajo del título
-    image_label = ttk.Label(splash_root, image=kaki)
-    image_label.pack(pady=40)
+    # # Agregar la imagen debajo del título
+    # image_label = ttk.Label(splash_root, image=kaki)
+    # image_label.pack(pady=40)
 
-    progress_bar = ttk.Progressbar(splash_root,
-                                   orient="horizontal",
-                                   length=300,
-                                   mode="determinate")
-    progress_bar.pack(pady=10)
+    # progress_bar = ttk.Progressbar(splash_root,
+    #                                orient="horizontal",
+    #                                length=300,
+    #                                mode="determinate")
+    # progress_bar.pack(pady=10)
 
-    splash_root.wm_attributes('-type', 'splash')
-    splash_root.title("Pantalla de carga")
-    splash_root.geometry("400x500")
-    splash_root.config(background="#247ca5")
-    splash_root.resizable(False, False)
+    # splash_root.wm_attributes('-type', 'splash')
+    # splash_root.title("Pantalla de carga")
+    # splash_root.geometry("400x500")
+    # splash_root.config(background="#247ca5")
+    # splash_root.resizable(False, False)
 
-    # Centrar la ventana
-    splash_root.deiconify()
-    centrarVentana(splash_root)
+    # # Centrar la ventana
+    # splash_root.deiconify()
+    # centrarVentana(splash_root)
 
-    for i in range(1, 101):
-        progress_bar["value"] = i
-        splash_root.update_idletasks()
-        time.sleep(0.03)
+    # for i in range(1, 101):
+    #     progress_bar["value"] = i
+    #     splash_root.update_idletasks()
+    #     time.sleep(0.03)
 
-    splash_root.after(0, mostrarVentanaMonitor)
+    # splash_root.after(0, mostrarVentanaMonitor)
 
     root.attributes('-zoomed', True)
     label_titulo.place(relx=0.5, rely=0.025, anchor="center")

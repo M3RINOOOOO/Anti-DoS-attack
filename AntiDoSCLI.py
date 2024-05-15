@@ -149,7 +149,6 @@ def main():
 
                 print(f"[-] Archivo de logs: {log_path}")
                 set_key(".env", "LOG_PATH", log_path)
-                print("OAISNOIASFN")
                 ## PEDIR ARCHIVO DE BANS
 
                 menu = TerminalMenu(
