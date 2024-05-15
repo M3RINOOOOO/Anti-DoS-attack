@@ -67,6 +67,6 @@ if [ "$NEW_SERVER" = "APACHE" ]; then
 elif [ "$NEW_SERVER" = "NGINX" ]; then
   file_sudoers="/etc/sudoers.d/${USER}_anti-dos_nginx"
   permiso_nginx="$USER ALL=(root) NOPASSWD: /usr/sbin/nginx -s reload"
-  sudo echo "$permiso_nginx" | sudo tee "$file_sudoers"
+  (sudo echo "$permiso_nginx" | sudo tee "$file_sudoers") &>/dev/null
 fi
 
