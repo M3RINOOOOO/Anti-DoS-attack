@@ -105,7 +105,10 @@ Desde aquí podemos:
 
 ### Vídeo de uso
 
-![](video_uso.mp4)
+<video width="320" height="240" controls>
+  <source src="video_uso.mp4" type="video/mp4">
+</video>
+
 
 
 ## Conexión por Telegram
