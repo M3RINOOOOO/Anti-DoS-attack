@@ -209,7 +209,7 @@ def main():
 
             pwd = subprocess.getoutput("/usr/bin/pwd")
             whoami = subprocess.getoutput("/usr/bin/whoami")
-            subprocess.run(f"{pwd}/setup.sh {whoami}")
+            os.system(f"{pwd}/setup.sh {whoami}")
             anti_dos = AntiDOSWeb.AntiDOSWeb(server, config_path, log_path,
                                              ban_path, "%d/%b/%Y:%H:%M:%S %z",
                                              database_file, telegram_user)
@@ -271,7 +271,7 @@ def main():
         if args.server or args.ban_path or args.log_path or args.config_path:
             pwd = subprocess.getoutput("/usr/bin/pwd")
             whoami = subprocess.getoutput("/usr/bin/whoami")
-            subprocess.run(f"{pwd}/setup.sh {whoami}")  
+            os.system(f"{pwd}/setup.sh {whoami}")  
 
         if faltan_args_obligatorios:
             print("\n[!] ATENCION")
