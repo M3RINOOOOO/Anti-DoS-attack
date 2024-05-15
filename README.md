@@ -27,7 +27,7 @@ Para instalar la herramienta, podemos seguir estos pasos
 
     ```bash
    cd Anti-DoS-attack
-   sudo apt install python3-tk
+   sudo apt install python3-tk python3.12-venv acl
    python3 -m venv .anti-dos-env
    source .anti-dos-env/bin/activate
    python3 -m pip install -r requirements.txt
