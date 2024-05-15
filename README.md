@@ -105,9 +105,10 @@ Desde aquí podemos:
 
 ### Vídeo de uso
 
-<video width="320" height="240" controls>
-  <source src="video_uso.mp4" type="video/mp4">
-</video>
+
+
+https://github.com/M3RINOOOOO/Anti-DoS-attack/assets/65337905/522526ed-62c9-4560-84f5-2bea17c00e43
+
 
 
 
