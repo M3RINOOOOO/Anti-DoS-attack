@@ -102,6 +102,12 @@ Desde aquí podemos:
 - Cambiar las variables que necesitemos
 - Ver qué IPs han sido baneadas/desbaneadas
 
+
+### Vídeo de uso
+
+![](video_uso.mp4)
+
+
 ## Conexión por Telegram
 
 Hemos configurado la aplicación para que,si se detecta un ataque DOS sobre tu página web, nuestro Bot de Telegram te envía una alerta.
