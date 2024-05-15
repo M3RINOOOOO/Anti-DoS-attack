@@ -34,6 +34,7 @@ done < .env
 USER="$1"
 
 # Damos los permisos necesarios SOLO para el usuario que esta ejecutando el script
+NEW_SERVER=$(echo "SERVER" | sed "s/'//g")
 NEW_CONFIG_PATH=$(echo "$CONFIG_PATH" | sed "s/'//g")
 NEW_LOG_PATH=$(echo "$LOG_PATH" | sed "s/'//g")
 NEW_BAN_PATH=$(echo "$BAN_PATH" | sed "s/'//g")
@@ -48,23 +49,23 @@ sudo /usr/bin/setfacl -m u:"$USER":r "$NEW_LOG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_BAN_PATH"
 
 
-if [ "$SERVER" = "APACHE" ]; then
-  RAIZ_WEB=$(/usr/bin/dirname $BAN_PATH)
+if [ "$NEW_SERVER" = "APACHE" ]; then
+  RAIZ_WEB=$(/usr/bin/dirname $NEW_BAN_PATH)
   if [ -f "$CONFIG_PATH" ]; then
     # Agrega las líneas al final del archivo
-    echo "<Directory $RAIZ_WEB>" >> $CONFIG_PATH
-    echo -e "\tAllowOverride All" >> $CONFIG_PATH
-    echo "</Directory>" >> $CONFIG_PATH
+    echo "<Directory $RAIZ_WEB>" >> $NEW_CONFIG_PATH
+    echo -e "\tAllowOverride All" >> $NEW_CONFIG_PATH
+    echo "</Directory>" >> $NEW_CONFIG_PATH
 
     sudo /usr/bin/systemctl apache2 reload
   else
-    echo -e "\n\n[!] El archivo de configuración $CONFIG_PATH no existe!\n"
+    echo -e "\n\n[!] El archivo de configuración $NEW_CONFIG_PATH no existe!\n"
     exit 1
   fi
   
   sudo service apache2 reload
   
-elif [ "$SERVER" = "NGINX" ]; then
+elif [ "$NEW_SERVER" = "NGINX" ]; then
   file_sudoers="/etc/sudoers.d/${USER}_anti-dos_nginx"
   permiso_nginx="$USER ALL=(root) NOPASSWD: /usr/sbin/nginx -s reload"
   sudo echo "$permiso_nginx" | sudo tee "$file_sudoers"
