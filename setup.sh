@@ -58,7 +58,7 @@ if [ "$NEW_SERVER" = "APACHE" ]; then
     echo -e "\tAllowOverride All" >> $NEW_CONFIG_PATH
     echo "</Directory>" >> $NEW_CONFIG_PATH
 
-    sudo /usr/bin/systemctl apache2 reload
+    sudo /usr/sbin/service apache2 reload
   else
     echo -e "\n\n[!] El archivo de configuración $NEW_CONFIG_PATH no existe!\n"
     exit 1
