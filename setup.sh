@@ -40,12 +40,16 @@ NEW_BAN_PATH=$(echo "$BAN_PATH" | sed "s/'//g")
 
 sudo /usr/bin/touch "$NEW_BAN_PATH"
 
+LOG_PATH_DIR=$(/usr/bin/dirname $LOG_PATH)
+
+sudo /usr/bin/setfacl -m u:"$USER":x "$LOG_PATH_DIR"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_CONFIG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":r "$NEW_LOG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_BAN_PATH"
 
 
 if [ "$SERVER" = "APACHE" ]; then
+  RAIZ_WEB=$(/usr/bin/dirname $BAN_PATH)
   if [ -f "$CONFIG_PATH" ]; then
     # Agrega las líneas al final del archivo
     echo "<Directory $RAIZ_WEB>" >> $CONFIG_PATH
