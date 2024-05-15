@@ -85,7 +85,7 @@ class AntiDOSWeb:
         Extrae las IP y las horas de acceso desde los registros del archivo de logs.
         """
         ips_horas = {}
-        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\]'
+        patron = r'(.*?)\ \-\ .* \[(.*?)\]'
         ips_desbanedas = self.obtenerIpsDesbaneadas()
         with FileReadBackwards(self.log_path, encoding="utf-8") as log:
             for l in log:
@@ -127,7 +127,7 @@ class AntiDOSWeb:
             dict: Un diccionario que contiene las horas de actividad y el número de peticiones en cada hora.
         """
         horas_actividad = {}
-        patron = r'(\b(?:\d{1,3}\.){3}\d{1,3}\b) .* \[(.*?)\] ".*?" (\d{3}) \d+ "-" ".*?"'
+        patron = r'(.*?)\ \-\ .* \[(.*?)\] ".*?" (\d{3}) \d+ "-" ".*?"'
 
         with FileReadBackwards(self.log_path, encoding="utf-8") as log:
             for l in log:
