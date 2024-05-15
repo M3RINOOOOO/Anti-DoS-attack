@@ -2,6 +2,17 @@
 
 Anti-DOS es una herramienta para mejorar la resistencia de los servidores web contra ataques de denegación de servicio (DoS), tanto a través de una interfaz de línea de comandos como de una interfaz gráfica de usuario (GUI).
 
+## Índice
+
+- [Instalación](#instalación)
+- [Uso](#uso)
+  - [Interfaz de línea de comandos (CLI)](#interfaz-de-línea-de-comandos-cli)
+  - [Interaz Gráfica (GUI)](#interfaz-gráfica-gui)
+- [Conexión por Telegram](#conexión-por-telegram)
+- [Almacenamiento y modificación de las variables globales](#almacenamiento-y-modificación-de-las-variables-globales)
+- [Principal contenido del repositorio](#principal-contenido-del-repositorio)
+- [Contribución](#contribución)
+
 
 ## Instalación
 
