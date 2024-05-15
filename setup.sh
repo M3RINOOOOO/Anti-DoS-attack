@@ -42,8 +42,9 @@ NEW_BAN_PATH=$(echo "$BAN_PATH" | sed "s/'//g")
 sudo /usr/bin/touch "$NEW_BAN_PATH"
 
 LOG_PATH_DIR=$(/usr/bin/dirname $LOG_PATH)
+NEW_LOG_PATH_DIR=$(echo "$LOG_PATH_DIR" | sed "s/'//g")
 
-sudo /usr/bin/setfacl -m u:"$USER":x "$LOG_PATH_DIR"
+sudo /usr/bin/setfacl -m u:"$USER":x "$NEW_LOG_PATH_DIR"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_CONFIG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":r "$NEW_LOG_PATH"
 sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_BAN_PATH"
@@ -51,7 +52,7 @@ sudo /usr/bin/setfacl -m u:"$USER":rw "$NEW_BAN_PATH"
 
 if [ "$NEW_SERVER" = "APACHE" ]; then
   RAIZ_WEB=$(/usr/bin/dirname $NEW_BAN_PATH)
-  if [ -f "$CONFIG_PATH" ]; then
+  if [ -f "$NEW_CONFIG_PATH" ]; then
     # Agrega las líneas al final del archivo
     echo "<Directory $RAIZ_WEB>" >> $NEW_CONFIG_PATH
     echo -e "\tAllowOverride All" >> $NEW_CONFIG_PATH
